@@ -1,0 +1,26 @@
+lesson_key,title,url
+101,Basic Building Blocks,http://www.shinyserver.tk:3838/Basic-Building-Blocks/
+102,Workspace and Files,http://www.shinyserver.tk:3838/Basic-Building-Blocks/
+103,Sequences of Numbers,http://www.shinyserver.tk:3838/Sequence-of-Numbers/
+104,Vectors,http://www.shinyserver.tk:3838/Basic-Building-Blocks/
+105,Missing Values,http://www.shinyserver.tk:3838/Basic-Building-Blocks/
+106,Subsetting Vectors,http://www.shinyserver.tk:3838/Basic-Building-Blocks/
+107,Matrices and Data Frames,http://www.shinyserver.tk:3838/Matrices-and-Data-Frames/
+108,Logic,http://www.shinyserver.tk:3838/Logic/
+109,Functions,http://www.shinyserver.tk:3838/Basic-Building-Blocks/
+110,lapply and sapply,http://www.shinyserver.tk:3838/Basic-Building-Blocks/
+111,One-Way ANOVA,http://www.shinyserver.tk:3838/One-Way-ANOVA/
+112 Exact Test of Goodness-of-Fit http://www.shinyserver.tk:3838/Exact-Test-of-Goodness-of-Fit/
+113 Kruskal-Wallis http://www.shinyserver.tk:3838/Kruskal-Wallis/
+114,Kruskal-Wallis,/Kruskal-Wallis/
+115,vapply and tapply,/vapply-and-tapply/
+116,Looking at Data,Looking-at-Data/
+117,Simulation,/Simulation/
+118,Dates and Times,dates-and-times/
+119,Base Graphics,/base-graphics/
+120,Introduction to Bayes's Theorem,/introduction-to-bayes-theorem/
+121,Variables,/variables/
+122,Exploratory Graphs,/exploratory-graphs/
+123,General Linear Models,/general-linear-models/
+124,bioconductor,/bioconductor/
+125,bioconductor,/boconductor2/

@@ -1,0 +1,233 @@
+---
+title: "Dates and Times"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+```
+
+R has a special way of representing dates and times, which can be helpful if you're working with data that show how something changes over time (i.e. time-series data) or if your data contain some other temporal information, like dates of birth.
+
+Dates are represented by the `Date` class and times are represented by the `POSIXct` and `POSIXlt` classes. Internally, dates are stored as the number of days since 1970-01-01 and times are stored as either the number of seconds since 1970-01-01 (for `POSIXct`) or a list of seconds, minutes, hours, etc. (for `POSIXlt`).
+
+Let's start by using `d1 <- Sys.Date()` to get the current date and store it in the variable d1. (That's the letter 'd' and the number 1.)
+
+```{r a, exercise=TRUE}
+
+```
+```{r a-solution}
+d1 <- Sys.Date()
+```
+
+Use the `class()` function to confirm `d1` is a `Date` object.
+
+```{r prepare-b}
+d1 <- Sys.Date()
+```
+```{r b, exercise=TRUE}
+
+```
+```{r b-solution}
+class(d1)
+```
+
+We can use `unclass()` to see what `d1` looks like internally. Try it out.
+
+```{r c, exercise=TRUE, exercise.setup = "prepare-b"}
+
+```
+```{r c-solution}
+unclass(d1)
+```
+
+That's the exact number of days since 1970-01-01.
+
+However, if you print `d1` to the console, you'll get today's date---YEAR-MONTH-DAY. Give it a try.
+
+```{r d, exercise=TRUE, exercise.setup = "prepare-b"}
+
+```
+```{r d-solution}
+d1
+```
+
+What if we need to reference a date prior to 1970-01-01? Create a variable `d2` containing `as.Date("1969-01-01")`.
+
+```{r e, exercise = TRUE}
+
+```
+```{r e-solution}
+d2 <- as.Date("1969-01-01")
+```
+
+```{r prepare-f}
+d2 <- as.Date("1969-01-01")
+```
+```{r f, exercise=TRUE}
+
+```
+```{r f-solution}
+unclass(d2)
+```
+
+As you may have anticipated, you get a negative number. In this case, it's -365, since 1969-01-01 is exactly one calendar year (i.e. 365 days) BEFORE 1970-01-01.
+
+Now, let's take a look at how R stores times. You can access the current date and time using the `Sys.time()` function with no arguments. Do this and store the result in a variable called `t1`.
+
+```{r g, exercise = TRUE}
+
+```
+```{r g-solution}
+t1 <- Sys.time()
+```
+
+View the contents of `t1`. Then check its class and unclass it.
+
+```{r prepare-h}
+t1 <- Sys.time()
+```
+```{r h, exercise=TRUE}
+
+```
+```{r h-solution}
+t1
+class(t1)
+unclass(t1)
+```
+
+As mentioned earlier, `POSIXct` is just one of two ways that R represents time information. (You can ignore the second value above, `POSIXt`, which just functions as a common language between `POSIXct` and `POSIXlt`.) Use `unclass()` to see what `t1` looks like internally -- the (large) number of seconds since the beginning of 1970.
+
+
+By default, `Sys.time()` returns an object of class `POSIXct`, but we can coerce the result to `POSIXlt` with `as.POSIXlt(Sys.time())`. Try it and store the result in `t2`.
+
+Then follow these steps: 
+
+1. Check `t2`'s class    
+2. View `t2`'s contents    
+3. Unclass `t2`    
+4. Type `str(unclass(t2))`    
+5. Access `t2`'s minutes by typing `t2$min`    
+
+```{r j, exercise = TRUE, exercise.setup = "prepare-h"}
+
+```
+```{r j-solution}
+t2 <- as.POSIXlt(Sys.time())
+class(t2)
+t2
+unclass(t2)
+str(unclass(t2))
+```
+
+t2, like all POSIXlt objects, is just a list of values that make up the date and time. Each of those values is a variable in the date object.
+
+Now that we have explored all three types of date and time objects, let's look at a f3w functions that extract useful information from any of these objects---`weekdays()`, `months()`, and `quarters()`.
+
+The `weekdays()` function will return the day of week from any date or time object. Try it out on `d1`, which is the Date object that contains today's date.
+
+```{r k, exercise = TRUE, exercise.setup = "prepare-b"}
+
+```
+```{r k-solution}
+weekdays(d1)
+```
+
+The `months()` function also works on any date or time object. Try it on the current time.
+
+```{r l, exercise = TRUE}
+
+```
+```{r l-solution}
+months(Sys.time())
+```
+
+The quarters() function returns the quarter of the year (Q1-Q4) from any date or time object. Try it on the current time as you did with `months()`.
+
+```{r m, exercise = TRUE}
+
+```
+```{r m-solution}
+quarters(Sys.time())
+```
+
+Often, the dates and times in a dataset will be in a format that R does not recognize. The `strptime()` function can be helpful in this situation.
+
+`strptime()` converts character vectors to `POSIXlt`. In that sense, it is similar to `as.POSIXlt()`, except that the input doesn't have to be in a particular format (YYYY-MM-DD).
+
+To see how it works, store the following character string in a variable called `t3`: "October 17, 1986 08:24" (with the quotes).
+
+```{r n, exercise = TRUE}
+
+```
+```{r n-solution}
+t3 <- "October 17, 1986 08:24"
+```
+
+Now, use `strptime(t3, "%B %d, %Y %H:%M")` to help R convert our datetime object to a format that it understands. Assign the result to a new variable called `t4`. (You should pull up the documentation for `strptime()` if you'd like to know more about how it works.)
+
+```{r prepare-o}
+t3 <- "October 17, 1986 08:24"
+```
+```{r o, exercise=TRUE}
+
+```
+```{r o-solution}
+t4 <- strptime(t3, "%B %d, %Y %H:%M")
+```
+
+Print the contents of `t4`.
+
+```{r prepare-p}
+t3 <- "October 17, 1986 08:24"
+t4 <- strptime(t3, "%B %d, %Y %H:%M")
+```
+```{r p, exercise=TRUE}
+
+```
+```{r p-solution}
+t4
+```
+
+That's the format we've come to expect. Now, let's check its `class()`.
+
+```{r q, exercise = TRUE, exercise.setup = "prepare-p"}
+
+```
+```{r q-solution}
+class(t4)
+```
+
+Finally, there are a number of operations that you can perform on dates and times, including arithmetic operations (+ and -) and comparisons (<, ==, etc.)
+
+The variable t1 contains the time at which you created it (recall you used Sys.time()). Confirm that some time has passed since you created t1 by using the 'greater than' operator to compare it to the current time: `Sys.time() > t1`.
+
+```{r r, exercise = TRUE, exercise.setup = "prepare-b"}
+
+```
+```{r r-solution}
+Sys.time() > t1
+```
+
+So we know that some time has passed, but how much? Try subtracting t1 from the current time using `Sys.time() - t1`. Don't forget the parentheses at the end of `Sys.time()`, since it is a function.
+
+```{r s, exercise = TRUE, exercise.setup = "prepare-b"}
+
+```
+```{r s-solution}
+Sys.time() - t1
+```
+
+The same line of thinking applies to addition and the other comparison operators. If you want more control over the units when finding the above difference in times, you can use `difftime()`, which allows you to specify a 'units' parameter.
+
+Use `difftime(Sys.time(), t1, units = 'days')` to find the amount of time in DAYS that has passed since you created `t1`.
+
+```{r t, exercise = TRUE, exercise.setup = "prepare-b"}
+
+```
+```{r t-solution}
+difftime(Sys.time(), t1, units = 'days')
+```
+
+In this lesson, you learned how to work with dates and times in R. While it is important to understand the basics, if you find yourself working with dates and times often, you may want to check out the `lubridate` package by Hadley Wickham.

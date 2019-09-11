@@ -1,0 +1,4 @@
+curriculum_key,title,filename,default_modules
+100,Blank,NA,NA
+102,Statistics,curricula/Statistics.Rmd,111
+103,Adventr,curricula/Adventr.Rmd,100

@@ -1,0 +1,349 @@
+---
+title: "Kruskal-Wallis Test"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(data.table)
+library(dplyr)
+library(rcompanion)
+library(FSA)
+knitr::opts_chunk$set(echo = FALSE)
+Input =("
+Obs Health     Efficiency
+1   Normal     2.9
+2   Normal     3.0
+3   Normal     2.5
+4   Normal     2.6
+5   Normal     3.2
+6   OAD        3.8
+7   OAD        2.7
+8   OAD        4.0
+9   OAD        2.4
+10  Asbestosis 2.8
+11  Asbestosis 3.4
+12  Asbestosis 3.7
+13  Asbestosis 2.2
+14  Asbestosis 2.0
+")
+Data = read.table(textConnection(Input),header=TRUE)
+### Order groups by median
+Data$Health <- factor(Data$Health, 
+                      levels=c("OAD", "Normal", "Asbestosis"))
+### Run the Dunn test
+PT = dunnTest(Efficiency ~ Health,
+              data=Data,
+              method="bh")    # Can adjust p-values; 
+                              # See ?p.adjust for options 
+```
+
+## Background
+
+#### Variables
+
+>One [nominal variable](http://www.biostathandbook.com/variabletypes.html#nominal)    
+One [ranked variable](http://www.biostathandbook.com/variabletypes.html#Ranked)
+
+#### Null and Alternative Hypotheses
+
+> H<sub>0</sub> is that the mean ranks are equal among groups represented by the nominal variable.    
+H<sub>A</sub> is that they are not equal.
+
+```{r vars, echo=FALSE}
+question("You might use a Kruskal-Wallis test to examine which of the following relationships?",
+      answer("Popularity ranking of podcasts by day of the week", correct = TRUE),
+      answer("Height and weight"),
+      answer("Height, weight, and age group"),
+      answer("Height, weight, and season")
+)
+```
+
+### Why use it? 
+
+The Kruskal-Wallis test is erroneously but commonly considered an alternative to an [ANOVA](http://www.biostathandbook.com/onewayANOVA.html). Many people use it if their data isn't [normally distributed](http://www.biostathandbook.com/normality.html). It tests whether the mean _ranks_ (rather than the means, which the ANOVA uses) are the same in all the groups represented by your nominal variable. 
+
+Some people have the attitude that unless you have a large sample size and can clearly demonstrate that your data is normal, you should routinely use Kruskal–Wallis; they think it is dangerous to use the one-way ANOVA, which assumes normality, when you don't know for sure that your data is normal. 
+
+However, one-way ANOVA is not very sensitive to deviations from normality. John H. McDonald (with permission, the author upon which many of our lessons are based) has done simulations with a variety of non-normal distributions, including flat, highly peaked, highly skewed, and bimodal, and the proportion of false positives is always around 5% or a little lower, just as it should be. For this reason, McDonald does not recommend the Kruskal-Wallis test as an alternative to one-way ANOVA. Because many people use it, you should be familiar with it even if you become convinced that it's overused.
+
+```{r why, echo=FALSE}
+question("When would you need to understand a Kruskal-Wallis test?",
+      answer("When you can't prove that your data is normally distributed"),
+      answer("When your data is very large"),
+      answer("To understand what other people are doing when they use it", correct = TRUE),
+      answer("Now, because there is always a quiz")
+)
+```
+
+
+The Kruskal-Wallis test is a __non-parametric test__, or a test that does not assume the data is from a distribution that can be completely described by the two parameters _mean_ and _standard deviation_ (the way a normal distribution can). 
+
+Like most non-parametric tests, you perform it on "ranked" data. Convert measurement observations to their ranks in the overall data set (with, in some cases, great loss of information) by giving the smallest value a rank of 1, the next smallest a rank of 2, and so on. Since you lose information when you substitute ranks for the original values, converting measurements to ranks can make this a somewhat less powerful test than a one-way ANOVA. This is another reason to prefer one-way ANOVA.
+
+```{r rank, echo=FALSE}
+question("How do you make ranked data?",
+      answer("You rate the data on a scale from poor to excellent"),
+      answer("The smallest measurement is 1, the second smallest is 2, and so on through all the values you have", correct = TRUE),
+      answer("The largest measurement is 1, the second largest is 2, and so on through all your values"),
+      answer("You submit your data for IRB review in a contest to see which researcher has the best data")
+)
+```
+
+The other assumption of one-way ANOVA is that the variation within the groups is equal (homoscedasticity). While Kruskal-Wallis does not assume that the data are normal, it does assume that the different groups have the same distribution, and groups with different standard deviations have different distributions. __If your data are heteroscedastic, Kruskal–Wallis is no better than one-way ANOVA, and may be worse__. Instead, you should __use Welch's ANOVA for heteroscedastic data__.
+
+```{r hetero, echo=FALSE}
+question("Upon which assumptions does the Kruskal-Wallis test rest?",
+      answer("Normality"),
+      answer("Inter-related variables"),
+      answer("Ranking"),
+      answer("Homoscedasticity and same group distributions", correct = TRUE)
+)
+```
+
+__The only time I recommend using Kruskal-Wallis is when your original data set actually consists of one nominal variable and one ranked variable__; in this case, you cannot do a one-way ANOVA and _must_ use the Kruskal–Wallis test. Dominance hierarchies (in behavioral biology) and developmental stages are the only ranked variables I can think of that are common in biology.
+
+```{r assumptions, echo=FALSE}
+question("Upon what assumptions does the Kruskal-Wallis test NOT rely?",
+      answer("Normality and homoscedasticity"),
+      answer("Wechsler test results"),
+      answer("Packages like dplyr and base stats"),
+      answer("All of the above", correct = TRUE)
+)
+```
+
+```{r best, echo=FALSE}
+question("What is the BEST situation in which to use a Kruskal-Wallis test?",
+      answer("When your data ISN'T normal"),
+      answer("When your data is homoscedastic"),
+      answer("When your data is actually ranked (a relatively rare occurence)", correct = TRUE),
+      answer("When your data is normal but the data set is very small")
+)
+```
+
+
+The Mann–Whitney *U* test (also known as the Mann–Whitney–Wilcoxon test, the Wilcoxon rank-sum test, or the Wilcoxon two-sample test) is limited to nominal variables with only two values; it is the non-parametric analogue to two-sample *t* test. It uses a different test statistic (*U* instead of the *H* of the Kruskal–Wallis test), but the *p* value is mathematically identical to that of a Kruskal–Wallis test. For simplicity, I will refer to Kruskal–Wallis on the rest of this web page, but everything also applies to the Mann–Whitney *U* test.
+
+The Kruskal–Wallis test is sometimes called Kruskal–Wallis one-way ANOVA or non-parametric one-way ANOVA. I think calling the Kruskal–Wallis test an ANOVA is confusing, and I recommend that you just call it the Kruskal–Wallis test.
+
+## Practice
+
+This section is very closely (and with gratitude) based on Salvatore S. Mangiafico's [An R Companion for the Handbook of Biostatistics](https://rcompanion.org/rcompanion/a_02.html). 
+
+#### Load Packages
+
+The following code checks to see if you have the required packages and, if you don't, installs them to your R environment. You can copy and paste this code into your local copy of RStudio or run it from here to see what happens. 
+
+```{r packages, exercise=TRUE}
+if(!require(dplyr)){install.packages("dplyr")}
+if(!require(FSA)){install.packages("FSA")}
+if(!require(DescTools)){install.packages("DescTools")}
+if(!require(rcompanion)){install.packages("rcompanion")}
+if(!require(multcompView)){install.packages("multcompView")}
+if(!require(pwr)){install.packages("pwr")}
+if(!require(lattice)){install.packages("lattice")}
+library(FSA)
+library(dplyr)
+library(DescTools)
+library(rcompanion)
+library(multcompView)
+library(pwr)
+library(lattice)
+```
+
+In this example, we will perform the `kruskal.test` function on a data frame from the native `stats` package. The example data is from Hollander & Wolfe (1973); it is measurements of the mucociliary efficiency in the rate of dust removal among normal subjects, subjects with obstructive airway disease, and subjects with asbestosis. 
+
+We will work through a complete example with plots, post-hoc tests, and alternative methods for the example used in R help that you can access through RStudio by typing `?kruskal.test`.
+
+#### Specify the order of the Factor Levels
+
+The data is already in memory named `Data`. `dplyr` is already in the library, so let's mutate `Data$Health` so it is a factor variable that has no repeating levels.
+
+```{r mutate, exercise=TRUE}
+Data <- mutate(Data,
+               Health = factor(Health, levels=unique(Health)))
+```
+
+#### Have a Look before Testing: Medians and Descriptive Statistics
+
+Summarize `Efficiency` by `Health.`
+
+```{r summarize, exercise=TRUE}
+Summarize(Efficiency ~ Health,
+          data = Data)
+```
+
+As you can see in the output, `Health` has three groups: Normal, OAD, and Asbestosis. For each group, `Summarize` shows the number in the group, the mean, the standard deviation, the minimum and maximum values, the median, and the interquartile points. 
+
+Let's visualize the same data using the `lattice` plotting package's `histogram` function.
+
+```{r viz, exercise=TRUE}
+histogram(~ Efficiency | Health, 
+          data=Data,
+          layout=c(1,3))      #Number of columns and rows of individual plots
+```
+
+The result is stacked histograms for each group we might examine in a Kruskal–Wallis test.  If the distributions are similar, then the Kruskal–Wallis test will test for a difference in medians. In this case, each group's _n_ is very low, so the distributions are difficult to interpret.
+
+Let's look at the same information using boxplots.
+
+```{r boxplots, exercise=TRUE}
+boxplot(Efficiency ~ Health,
+        data = Data,
+        ylab="Efficiency",
+        xlab="Health")
+```
+
+#### Test the Hypothesis
+
+Interpreting the null and alternative hypotheses for a typical Kruskal-Wallis test we arrive at these:
+
+>H<sub>0</sub> is that the mean ranks are equal among Normal, OAD, and asbestosis health groups.    
+H<sub>A</sub> is that mean ranks among the three groups are not equal.
+
+
+```{r run_test, exercise=TRUE}
+kruskal.test(Efficiency ~ Health, 
+             data = Data)
+```
+
+The output shows that the mean ranks are not different. We fail to reject H<sub>0</sub>; nor do we accept it. This test, like so many hypothesis tests _proves_ nothing but that we cannot safely accept H<sub>A</sub>. 
+
+#### What if _p_ had been < .05?
+
+If the Kruskal–Wallis test were significant, we would have continued on to performa a post-hoc analysis to determine which levels of the independent variable differed from which other level.  
+
+Heck, let's do it anyway. Many people use the Dunn test from the `dunnTest` function in the `FSA` package.  Adjustments to the _p_ values could be made using the `method` option to control the familywise error rate or to control the false discovery rate.  See `?p.adjust` for details.
+
+Zar (2010) said that the Dunn test is appropriate for groups with unequal numbers of observations.
+
+If there are several values to compare, it can be beneficial to have R convert this table to a compact letter display for you.  The `cldList` function in the `rcompanion` package can do this.
+
+Here is the code for a Dunn test.
+
+```{r dunn, exercise=TRUE}
+### Order groups by median
+Data$Health <- factor(Data$Health, 
+                      levels=c("OAD", "Normal", "Asbestosis"))
+
+### Run the Dunn test
+PT = dunnTest(Efficiency ~ Health,
+              data=Data,
+              method="bh")    # Can adjust p-values; 
+                              # See ?p.adjust for options 
+## See the results
+PT
+```
+
+Now to make the output pretty.
+
+```{r make_it_pretty, exercise=TRUE}
+PT <- PT$res
+PT
+cldList(comparison = PT$Comparison,
+        p.value    = PT$P.adj,
+        threshold  = 0.05)
+```
+
+Well, we didn't have significant differences, so there was nothing to see. Hence the error.
+
+Let's try again with a different data set, the submissive dog data in McDonals's _Handbook_ on pages 161 and 162. The next code chunk populates the data and runs the test.
+
+```{r prepare-dog}
+Input =("
+Dog          Sex      Rank
+ Merlino      Male     1
+ Gastone      Male     2
+ Pippo        Male     3
+ Leon         Male     4
+ Golia        Male     5
+ Lancillotto  Male     6
+ Mamy         Female   7
+ Nanà         Female   8
+ Isotta       Female   9
+ Diana        Female  10
+ Simba        Male    11
+ Pongo        Male    12
+ Semola       Male    13
+ Kimba        Male    14
+ Morgana      Female  15
+ Stella       Female  16
+ Hansel       Male    17
+ Cucciola     Male    18
+ Mammolo      Male    19
+ Dotto        Male    20
+ Gongolo      Male    21
+ Gretel       Female  22
+ Brontolo     Female  23
+ Eolo         Female  24
+ Mag          Female  25
+ Emy          Female  26
+ Pisola       Female  27
+ ")
+Data = read.table(textConnection(Input),header=TRUE)
+```
+```{r dog, exercise = TRUE, exercise.setup = "prepare-dog"}
+kruskal.test(Rank ~ Sex, 
+             data = Data)
+```
+
+That's more like it: a low _p_ value. Now create a boxplot to see how the groups differ.
+
+
+```{r graph_dog, exercise=TRUE, exercise.setup = "prepare-dog"}
+boxplot(Rank ~ Sex,
+        data = Data,
+        ylab="Rank",
+        xlab="Sex")
+```
+
+Female dogs have higher median rank than male dogs in this data set and most likely outside this data set as well (that's what a _p_ value means). 
+
+Let's look at one final example, concerning oyster DNA.
+
+```{r oysters, exercise=TRUE}
+### --------------------------------------------------------------
+### Kruskal–Wallis test, oyster DNA example, pp. 163–164
+### --------------------------------------------------------------
+
+Input =("
+ Markername  Markertype  fst
+ CVB1        DNA        -0.005
+ CVB2m       DNA         0.116
+ CVJ5        DNA        -0.006
+ CVJ6        DNA         0.095
+ CVL1        DNA         0.053
+ CVL3        DNA         0.003
+ 6Pgd        protein    -0.005
+ Aat-2       protein     0.016
+ Acp-3       protein     0.041
+ Adk-1       protein     0.016
+ Ap-1        protein     0.066
+ Est-1       protein     0.163
+ Est-3       protein     0.004
+ Lap-1       protein     0.049
+ Lap-2       protein     0.006
+ Mpi-2       protein     0.058
+ Pgi         protein    -0.002
+ Pgm-1       protein     0.015
+ Pgm-2       protein     0.044
+ Sdh         protein     0.024
+")
+
+Data = read.table(textConnection(Input),header=TRUE)
+kruskal.test(fst ~ Markertype, 
+             data = Data)
+boxplot(fst ~ Markertype,
+        data = Data,
+        ylab="fst",
+        xlab="Markertype")
+```
+
+The results are not significant, and the boxplot confirms the finding. The median ranks are very close. 
+
+## References
+
+John H. McDonald's [Handbook of Biological Statistics](http://www.biostathandbook.com/kruskalwallis.html)
+
+Salvatore S. Mangiafico's [An R Companion for the Handbook of Biostatistics](https://rcompanion.org/rcompanion/a_02.html)

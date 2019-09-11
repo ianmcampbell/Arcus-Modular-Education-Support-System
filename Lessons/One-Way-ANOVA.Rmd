@@ -1,0 +1,232 @@
+---
+title: "One Way ANOVA"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(data.table)
+library(dplyr)
+library(pwr)
+load("One-Way-ANOVA.RData")
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## One Way ANOVA
+
+Use one-way anova when you have __one nominal variable__ and __one measurement variable__; the nominal variable divides the measurements into two or more groups. It tests whether the means of the measurement variable are the same for the different groups.
+
+### When to use it
+
+Analysis of variance (ANOVA) is the most commonly used technique for __comparing the means of groups__ of measurement data. There are lots of different experimental designs that can be analyzed with different kinds of ANOVA.
+
+In a one-way anova (also known as a one-factor, single-factor, or single-classification anova), there is one measurement variable and one nominal variable. You make multiple observations of the measurement variable for each value of the nominal variable. For example, here are some data on a shell measurement (the length of the anterior adductor muscle scar, standardized by dividing by length; “AAM length”) in the mussel *Mytilus trossulus* from five locations: Tillamook, Oregon; Newport, Oregon; Petersburg, Alaska; Magadan, Russia; and Tvarminne, Finland.
+
+```{r data1, echo=FALSE}
+RawData
+```
+
+The nominal variable is location, with the five values Tillamook, Newport, Petersburg,
+Magadan, and Tvarminne. There are six to ten observations of the measurement variable,
+AAM length, from each location.
+
+### Null hypothesis
+The statistical null hypothesis is that the means of the measurement variable are the
+same for the different categories of data; the alternative hypothesis is that they are not all
+the same. For the example data set, the null hypothesis is that the mean AAM length is the same at each location, and the alternative hypothesis is that the mean AAM lengths are not all the same.
+
+## How the test works
+The basic idea is to calculate the mean of the observations within each group, then
+compare the variance among these means to the average variance within each group.
+Under the *null hypothesis* that the observations in the different groups all have the same
+mean, the weighted among-group variance will be the same as the within-group variance.
+As the means get further apart, the variance among the means increases. The test statistic
+is thus the ratio of the variance among means divided by the average variance within
+groups, or Fs. This statistic has a known distribution under the null hypothesis, so the
+probability of obtaining the observed Fs under the null hypothesis can be calculated.
+The shape of the F-distribution depends on two degrees of freedom, the degrees of
+freedom of the numerator (among-group variance) and degrees of freedom of the
+denominator (within-group variance). The among-group degrees of freedom is the
+number of groups minus one. The within-groups degrees of freedom is the total number
+of observations, minus the number of groups. Thus if there are n observations in a groups,
+numerator degrees of freedom is a-1 and denominator degrees of freedom is n-a. For the
+example data set, there are 5 groups and 39 observations, so the numerator degrees of
+freedom is 4 and the denominator degrees of freedom is 34. 
+
+## Performing a one-way ANOVA in R
+
+The raw data `aam_data` is provided as a two column `data.frame` with the first column being the `location` and the second column being the anterior adductor muscle length, `aam`.
+
+```{r raw_data, exercise=TRUE}
+print(aam_data)
+```
+
+### Convert variable to factor
+First, use `dplyr` to convert the locations to a `factor`. 
+
+```{r two-plus-two, exercise=TRUE}
+library(dplyr)
+aam_data = 
+mutate(aam_data,
+       location = factor(location, levels=unique(location)))
+```
+
+### Visualize the data with a boxplot
+
+Qucikly visualize the data with a boxplot. This can qucikly be done using the R formula interface.
+
+```{r boxplot, exercise=TRUE}
+boxplot(aam ~ location,data=aam_data)
+```
+
+### Perform ANOVA 
+
+Perform the analysis with the `aov` function from the `stats` package.
+
+```{r anova, exercise=TRUE}
+fit <- aov(aam ~ location,data=aam_data)
+summary(fit)
+```
+
+## Assumptions
+
+One-way anova assumes that the observations within each group are normally
+distributed. It is not particularly sensitive to deviations from this assumption; if you apply
+one-way anova to data that are non-normal, your chance of getting a P value less than
+0.05, if the null hypothesis is true, is still pretty close to 0.05. It’s better if your data are
+close to normal, so after you collect your data, you should calculate the residuals (the
+difference between each observation and the mean of its group) and plot them on a
+histogram. If the residuals look severely non-normal, try data transformations and see if
+one makes the data look more normal.
+
+If none of the transformations you try make the data look normal enough, you can use
+the Kruskal-Wallis test. Be aware that it makes the assumption that the different groups
+have the same shape of distribution, and that it doesn’t test the same null hypothesis as
+one-way anova. Personally, I don’t like the Kruskal-Wallis test; I recommend that if you
+have non-normal data that can’t be fixed by transformation, you go ahead and use oneway
+anova, but be cautious about rejecting the null hypothesis if the P value is not very far
+below 0.05 and your data are extremely non-normal.
+One-way anova also assumes that your data are homoscedastic, meaning the standard
+deviations are equal in the groups. You should examine the standard deviations in the
+different groups and see if there are big differences among them.
+If you have a balanced design, meaning that the number of observations is the same in
+each group, then one-way anova is not very sensitive to heteroscedasticity (different
+standard deviations in the different groups). I haven’t found a thorough study of the
+effects of heteroscedasticity that considered all combinations of the number of groups,
+sample size per group, and amount of heteroscedasticity. I’ve done simulations with two
+groups, and they indicated that heteroscedasticity will give an excess proportion of false
+positives for a balanced design only if one standard deviation is at least three times the
+size of the other, and the sample size in each group is fewer than 10. I would guess that a
+similar rule would apply to one-way anovas with more than two groups and balanced
+designs.
+
+Heteroscedasticity is a much bigger problem when you have an unbalanced design
+(unequal sample sizes in the groups). If the groups with smaller sample sizes also have
+larger standard deviations, you will get too many false positives. The difference in
+standard deviations does not have to be large; a smaller group could have a standard
+deviation that’s 50% larger, and your rate of false positives could be above 10% instead of
+at 5% where it belongs. If the groups with larger sample sizes have larger standard
+deviations, the error is in the opposite direction; you get too few false positives, which
+might seem like a good thing except it also means you lose power (get too many false
+negatives, if there is a difference in means).
+
+You should try really hard to have equal sample sizes in all of your groups. With a
+balanced design, you can safely use a one-way anova unless the sample sizes per group
+are less than 10 and the standard deviations vary by threefold or more. If you have a
+balanced design with small sample sizes and very large variation in the standard
+deviations, you should use Welch’s anova instead.
+
+If you have an unbalanced design, you should carefully examine the standard
+deviations. Unless the standard deviations are very similar, you should probably use
+Welch’s anova. It is less powerful than one-way anova for homoscedastic data, but it can
+be much more accurate for heteroscedastic data from an unbalanced design.
+
+## Tukey-Kramer 
+
+If you reject the null hypothesis that all the means are equal, you’ll probably want to
+look at the data in more detail. One common way to do this is to compare different pairs
+of means and see which are significantly different from each other. For the mussel shell
+example, the overall P value is highly significant; you would probably want to follow up
+by asking whether the mean in Tillamook is different from the mean in Newport, whether
+Newport is different from Petersburg, etc.
+
+It might be tempting to use a simple two-sample t–test on each pairwise comparison
+that looks interesting to you. However, this can result in a lot of false positives. When
+there are a groups, there are (a2–a)/2 possible pairwise comparisons, a number that quickly
+goes up as the number of groups increases. With 5 groups, there are 10 pairwise comparisons; with 10 groups, there are 45, and with 20 groups, there are 190 pairs. When you do multiple comparisons, you increase the probability that at least one will have a P value less than 0.05 purely by chance, even if the null hypothesis of each comparison is
+true.
+
+There are a number of different tests for pairwise comparisons after a one-way anova,
+and each has advantages and disadvantages. The differences among their results are fairly
+subtle, so I will describe only one, the Tukey-Kramer test. It is probably the most
+commonly used post-hoc test after a one-way anova, and it is fairly easy to understand.
+In the Tukey–Kramer method, the minimum significant difference (MSD) is calculated
+for each pair of means. It depends on the sample size in each group, the average variation
+within the groups, and the total number of groups. For a balanced design, all of the MSDs
+will be the same; for an unbalanced design, pairs of groups with smaller sample sizes will
+have bigger MSDs. If the observed difference between a pair of means is greater than the
+MSD, the pair of means is significantly different. 
+
+Perform the analysis with the `TukeyHSD` function from the `stats` package.
+
+```{r tukey, exercise=TRUE}
+fit <- aov(aam ~ location,data=aam_data)
+summary(fit)
+TukeyHSD(fit)
+```
+
+
+## Welch’s ANOVA
+
+If the data show a lot of heteroscedasticity (different groups have different standard
+deviations), the one-way anova can yield an inaccurate P value; the probability of a false
+positive may be much higher than 5%. In that case, you should use Welch’s anova.
+
+Perform the analysis with the `oneway.test` function from the `stats` package. When the `var.equal` argument is set to `FALSE`, the Welch method is used. 
+
+```{r welch, exercise=TRUE}
+oneway.test(aam ~ location,data=aam_data,var.equal=FALSE)
+```
+
+## Power analysis
+To do a power analysis for a one-way anova is kind of tricky, because you need to
+decide what kind of effect size you’re looking for. If you’re mainly interested in the overall
+significance test, the sample size needed is a function of the standard deviation of the
+group means. Your estimate of the standard deviation of means that you’re looking for
+may be based on a pilot experiment or published literature on similar experiments.
+If you’re mainly interested in the comparisons of means, there are other ways of
+expressing the effect size. Your effect could be a difference between the smallest and
+largest means, for example, that you would want to be significant by a Tukey-Kramer test.
+
+As an example, let’s say you’re studying transcript amount of some gene in arm
+muscle, heart muscle, brain, liver, and lung. Based on previous research, you decide that
+you’d like the anova to be significant if the means were 10 units in arm muscle, 10 units in
+heart muscle, 15 units in brain, 15 units in liver, and 15 units in lung. The standard
+deviation of transcript amount within a tissue type that you’ve seen in previous research
+is 12 units. 
+
+Perform the analysis with the `power.anova.test` function from the `stats` package. You need to specify the number of groups with the `groups` argument, within group *variance* with the `within.var` argument, between group *variance* with the `between.var` argument, the signficiance value with `sig.level` and power with `power`. Recall that standard deviation is the square root of variance. 
+
+```{r power, exercise=TRUE}
+group_means <- c(10, 10, 15, 15, 15)
+experiment_var <- 12^2
+power.anova.test(groups = 5, 
+                 within.var = experiment_var, 
+                 between.var = var(group_means), 
+                 sig.level = 0.05, power = 0.80)
+```
+
+Since there are five groups, you’d need 59 observations per group to have an 80% chance of having a significant (P<0.05) one-way ANOVA.
+
+Alternatively, if you have no experimental data, you can use the `cohen.ES` function to estimate effect sizes and the `pwr.anova.test` function from the `pwr` package. 
+
+```{r cohen, exercise=TRUE}
+library(pwr)
+effect_size <- cohen.ES(test="anov",size="small")$effect.size
+pwr.anova.test(k = 5, 
+               f = effect_size,
+               sig.level = 0.05, power = 0.80)
+
+```

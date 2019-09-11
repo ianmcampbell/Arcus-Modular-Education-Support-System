@@ -1,0 +1,27 @@
+---
+layout: post
+title: "How to Run R on a Remote Server"
+excerpt: "The easiest way to use R on a cloud server is via RStudio Cloud."
+tags: [R, cloud]
+categories: [Computational Tools]
+comments: true
+share: false
+author: sheila_braun
+output: 
+  html_document:
+    keep_md: true
+---
+```{r setup, include=FALSE}
+```
+
+## RStudio in the Cloud
+
+The easiest way to use R on a cloud server is via [RStudio Cloud](https://rstudio.cloud). You can create your own projects once you have an account with RStudio Cloud, or you may have been invited by an instructor for an R Workshop. 
+
+When you first log on to RStudio Cloud, you will be able to access your workspace, which might look something like this:
+
+![png](./images/first-page-in-rstudio-cloud.png)
+
+Along the left side are some interesting options. Select `Primers` to be presented with this screen:
+
+![png](./images/primer-page.png)

@@ -1,0 +1,34 @@
+---
+title: "Open Refine"
+author: "Ian Campbell"
+date: "8/8/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# How to Efficienty Clean Your Data in Open Refine 
+
+OpenRefine is a desktop application in that you download it, install it, and run it on your own computer. However, unlike most other desktop applications, it runs as a small web server on your own computer and you point your web browser at that web server in order to use Refine. So, think of Refine as a personal and private web application.
+
+
+### Installation
+* Download and install Java JRE if you have not already
+  + [Visit the Oracle website to download JRE](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
+* Download OpenRefine from GitHub
+  + https://github.com/OpenRefine/OpenRefine/releases
+* Visit the OpenRefine GitHub Wiki from the links below for detailed instructions.
+  + [Windows](https://github.com/OpenRefine/OpenRefine/wiki/Installation-Instructions#windows)
+  + [Linux](https://github.com/OpenRefine/OpenRefine/wiki/Installation-Instructions#linux)
+  + [MacOS](https://github.com/OpenRefine/OpenRefine/wiki/Installation-Instructions#macOS)
+    - Note: you can also easily install OpenRefine with [Homebrew](https://brew.sh/index) (if you have it installed) by issuing `brew cask install openrefine` in terminal
+
+### The Basics
+
+First, although OpenRefine might start out looking like a spreadsheet program don't expect it to work like a spreadsheet program. OpenRefine is **NOT** for entering new data one cell at a time. 
+
+OpenRefine is for applying transformations over many existing cells in bulk, for the purpose of cleaning up the data, extending it with more data from other sources, and getting it to some form that other tools can consume.
+
+![](www/OpenRefine-1.png)

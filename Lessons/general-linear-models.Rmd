@@ -1,0 +1,264 @@
+---
+title: "Multiple Regression"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(data.table)
+library(dplyr)
+library(rcompanion)
+knitr::opts_chunk$set(echo = FALSE)
+options(prompt = "R> ", continue = "+  ", width = 64,
+        digits = 4, show.signif.stars = FALSE, useFancyQuotes = FALSE)
+
+options(SweaveHooks = list(onefig =   function() {par(mfrow = c(1,1))},
+                           twofig =   function() {par(mfrow = c(1,2))},                           
+                           threefig = function() {par(mfrow = c(1,3))},
+                           fourfig =  function() {par(mfrow = c(2,2))},
+                           sixfig =   function() {par(mfrow = c(3,2))}))
+
+library("AER")
+
+suppressWarnings(RNGversion("3.5.0"))
+set.seed(1071)
+df <- load("stream.RData")
+```
+
+## Background
+
+#### Variables
+
+>Any number of scalar or binary variabls; categorical variables can be transformed into scalar variables by creating "dummy" variables.
+
+#### Null and Alternative Hypotheses
+
+The main null hypothesis of a multiple regression is that there is no relationship between the `X` variables being used as **predictors** and the `Y` variable being used as an **outcome** variable; in other words, the `Y` values you predict from your multiple regression equation are no closer to the actual `Y` values than you would expect by chance. As you perform the multiple regression, you'll test not only the overall null hypothesis (no linear relationships between the Xs and the Y) but also a null hypothesis for *each* `X` variable, that adding that `X` variable to the multiple regression does not improve the fit of the multiple regression equation any more than expected by chance. While you will get P values for the null hypotheses, you should use them as a guide to building a multiple regression equation; you should not use the P values as a test of biological null hypotheses about whether a particular `X` variable causes variation in Y.
+
+> H~0~ There is no relationship between the `X` variables and the `Y` variable; in other words, the `Y` values you predict from your multiple regression equation are no closer to the actual `Y` values than you would expect by chance. As you are doing a multiple regression, you'll also test a null hypothesis for each `X` variable, that adding that `X` variable to the multiple regression does NOT improve the fit of the multiple regression equation any more than expected by chance. While you will get P values for the null hypotheses, you should use them as a guide to building a multiple regression equation. 
+
+>h~A~ The predictions from the `Y` values are closer than you would expect by chance. As you do a multiple regression, you will accept each variable that meets the alternative hypothesis that it improves the fit of the multiple regression equation. 
+
+>NOTE: You should never use the P values as a test that the biological null hypotheses is true.
+
+For example,
+
+## Practice
+
+#### Load Packages
+
+The following code checks to see if you have the required packages and, if you don't, installs them to your R environment. You can copy and paste this code into your local copy of RStudio or run it from here to see what happens. 
+
+```{r packages, exercise=TRUE, eval = FALSE}
+if(!require(dplyr)){install.packages("dplyr")}
+if(!require(FSA)){install.packages("FSA")}
+if(!require(DescTools)){install.packages("DescTools")}
+if(!require(rcompanion)){install.packages("rcompanion")}
+if(!require(multcompView)){install.packages("multcompView")}
+if(!require(pwr)){install.packages("pwr")}
+if(!require(lattice)){install.packages("lattice")}
+library(FSA)
+library(dplyr)
+library(DescTools)
+library(rcompanion)
+library(multcompView)
+library(pwr)
+library(lattice)
+```
+
+In this example, we will perform the `kruskal.test` function on a data frame from the native `stats` package. The example data is from Hollander & Wolfe (1973); it is measurements of the mucociliary efficiency in the rate of dust removal among normal subjects, subjects with obstructive airway disease, and subjects with asbestosis. 
+
+We will work through a complete example with plots, post-hoc tests, and alternative methods for the example used in R help that you can access through RStudio by typing `?kruskall.wallis`.
+
+#### Specify the order of the Factor Levels
+
+The data is already in memory named `Data`. `dplyr` is already in the library, so let's mutate `Data$Health` so it is a factor variable that has no repeating levels.
+
+```{r mutate, exercise=TRUE, eval = FALSE}
+Data <- mutate(Data,
+               Health = factor(Health, levels=unique(Health)))
+```
+
+#### Have a Look before Testing: Medians and Descriptive Statistics
+
+Summarize `Efficiency` by `Health.`
+
+```{r summarize, exercise=TRUE, eval = FALSE}
+Summarize(Efficiency ~ Health,
+          data = Data)
+```
+
+As you can see in the output, `Health` has three groups: Normal, OAD, and Asbestosis. For each group, `Summarize` shows the number in the group, the mean, the standard deviation, the minimum and maximum values, the mediam, and the interquartile points. 
+
+Let's visualize the same data using the `lattice` plotting package's `histogram` function.
+
+```{r viz, exercise=TRUE, eval = FALSE}
+histogram(~ Efficiency | Health, 
+          data=Data,
+          layout=c(1,3))      #Number of columns and rows of individual plots
+```
+
+The result is stacked histograms for each group we might examine in a Kruskal–Wallis test.  If the distributions are similar, then the Kruskal–Wallis test will test for a difference in medians. In this case, each group's _n_ is very low, so the distributions are difficult to interpret.
+
+Let's look at the same information using boxplots.
+
+```{r boxplots, exercise=TRUE, eval = FALSE}
+boxplot(Efficiency ~ Health,
+        data = Data,
+        ylab="Efficiency",
+        xlab="Health")
+```
+
+#### Test the Hypothesis
+
+Interpreting the null and alternative hypotheses for a typical Kruskal-Wallis test we arrive at these:
+
+>H<sub>0</sub> is that the mean ranks are equal among Normal, OAD, and asbestosis health groups.    
+H<sub>A</sub> is that mean ranks among the three groups are not equal.
+
+
+```{r run_test, exercise=TRUE, eval = FALSE}
+kruskal.test(Efficiency ~ Health, 
+             data = Data)
+```
+
+The output shows that the mean ranks are not different. We fail to reject H<sub>0</sub>---nor do we accept it. This test, like so many hypothesis tests _proves_ nothing but that we cannot safely accept H<sub>A</sub>. 
+
+#### What if _p_ had been < .05?
+
+If the Kruskal–Wallis test were significant, we would have continued on to performa a post-hoc analysis to determine which levels of the independent variable differed from which other level.  
+
+Heck, let's do it anyway. Many people use the Dunn test from the `dunnTest` function in the `FSA` package.  Adjustments to the _p_ values could be made using the `method` option to control the familywise error rate or to control the false discovery rate.  See `?p.adjust` for details.
+
+Zar (2010) said that the Dunn test is appropriate for groups with unequal numbers of observations.
+
+If there are several values to compare, it can be beneficial to have R convert this table to a compact letter display for you.  The `cldList` function in the `rcompanion` package can do this.
+
+Here is the code for a Dunn test.
+
+```{r dunn, exercise=TRUE, eval = FALSE}
+### Order groups by median
+Data$Health <- factor(Data$Health, 
+                      levels=c("OAD", "Normal", "Asbestosis"))
+
+### Run the Dunn test
+PT = dunnTest(Efficiency ~ Health,
+              data=Data,
+              method="bh")    # Can adjust p-values; 
+                              # See ?p.adjust for options 
+## See the results
+PT
+```
+
+Now to make the output pretty.
+
+```{r make_it_pretty, exercise=TRUE, eval = FALSE}
+PT <- PT$res
+PT
+cldList(comparison = PT$Comparison,
+        p.value    = PT$P.adj,
+        threshold  = 0.05)
+```
+
+Well, we didn't have significant differences, so there was nothing to see. Hence the error.
+
+Let's try again with a different data set, the submissive dog data in McDonal's _Handbook_ on pages 161 and 162. The next code chunk populates the data and runs the test.
+
+```{r prepare-dog, eval = FALSE}
+Input =("
+Dog          Sex      Rank
+ Merlino      Male     1
+ Gastone      Male     2
+ Pippo        Male     3
+ Leon         Male     4
+ Golia        Male     5
+ Lancillotto  Male     6
+ Mamy         Female   7
+ Nanà         Female   8
+ Isotta       Female   9
+ Diana        Female  10
+ Simba        Male    11
+ Pongo        Male    12
+ Semola       Male    13
+ Kimba        Male    14
+ Morgana      Female  15
+ Stella       Female  16
+ Hansel       Male    17
+ Cucciola     Male    18
+ Mammolo      Male    19
+ Dotto        Male    20
+ Gongolo      Male    21
+ Gretel       Female  22
+ Brontolo     Female  23
+ Eolo         Female  24
+ Mag          Female  25
+ Emy          Female  26
+ Pisola       Female  27
+ ")
+Data = read.table(textConnection(Input),header=TRUE)
+```
+```{r dog, exercise = TRUE, exercise.setup = "prepare-dog", eval = FALSE}
+kruskal.test(Rank ~ Sex, 
+             data = Data)
+```
+
+That's more like it: a low _p_ value. Now create a boxplot to see how the groups differ.
+
+
+```{r graph_dog, exercise=TRUE, exercise.setup = "prepare-dog", eval = FALSE}
+boxplot(Rank ~ Sex,
+        data = Data,
+        ylab="Rank",
+        xlab="Sex")
+```
+
+Female dogs have higher median rank than male dogs in this data set and most likely outside this data set as well (that's what a _p_ value means). 
+
+Let's look at one final example---concerning oyster DNA.
+
+```{r oysters, exercise=TRUE, eval = FALSE}
+### --------------------------------------------------------------
+### Kruskal–Wallis test, oyster DNA example, pp. 163–164
+### --------------------------------------------------------------
+
+Input =("
+ Markername  Markertype  fst
+ CVB1        DNA        -0.005
+ CVB2m       DNA         0.116
+ CVJ5        DNA        -0.006
+ CVJ6        DNA         0.095
+ CVL1        DNA         0.053
+ CVL3        DNA         0.003
+ 6Pgd        protein    -0.005
+ Aat-2       protein     0.016
+ Acp-3       protein     0.041
+ Adk-1       protein     0.016
+ Ap-1        protein     0.066
+ Est-1       protein     0.163
+ Est-3       protein     0.004
+ Lap-1       protein     0.049
+ Lap-2       protein     0.006
+ Mpi-2       protein     0.058
+ Pgi         protein    -0.002
+ Pgm-1       protein     0.015
+ Pgm-2       protein     0.044
+ Sdh         protein     0.024
+")
+
+Data = read.table(textConnection(Input),header=TRUE)
+kruskal.test(fst ~ Markertype, 
+             data = Data)
+boxplot(fst ~ Markertype,
+        data = Data,
+        ylab="fst",
+        xlab="Markertype")
+```
+
+The results are not significant, and the boxplot confirms the finding. The median ranks are very close. 
+
+## References
+
+John McDonald's [Handbook of Biostatistics](http://www.biostathandbook.com/kruskalwallis.html)
+
+Salvatore S. Magnifiaco's [An R Companion for the Handbook of Biostatistics](https://rcompanion.org/rcompanion/a_02.html)
