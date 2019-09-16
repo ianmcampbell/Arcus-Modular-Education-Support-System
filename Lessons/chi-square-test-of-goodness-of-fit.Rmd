@@ -1,0 +1,287 @@
+---
+title: "Chi-Square Test of Goodness-of-Fit"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+if(!require(rcompanion)){install.packages("rcompanion")}
+```
+
+## Background
+
+This section is based with thanks on the works of John H. McDonald ([Handbook of Biological Statistics](http://www.biostathandbook.com/chigof.html)) and Salvatore S. Mangiafico ([R Companion to the Biostats Handbook](https://rcompanion.org/rcompanion/b_03.html)).
+
+#### Variables
+
+>One [nominal variable](http://www.biostathandbook.com/variabletypes.html#nominal)    
+
+#### Null and Alternative Hypotheses
+
+> H<sub>0</sub> is that the proportions for the levels for the nominal variable _are not_ different from the theoretical proportions.    
+H<sub>A</sub> (2-sided) is that the proportions for the levels for the nominal variable _are_ different from the theoretical proportions.
+
+The null hypothesis is usually an extrinsic hypothesis, where you knew the expected proportions before doing the experiment. Examples include a 1:1 heads to tails ratio or a 1:2:1 ratio in a genetic cross. Another example would be looking at an area of shore that had 59% of the area covered in sand, 28% mud and 13% rocks; if you were investigating where seagulls like to stand, your null hypothesis would be that 59% of the seagulls were standing on sand, 28% on mud and 13% on rocks.
+
+Significant results can be reported as “The proportions for the levels for the nominal variable were statistically different from the theoretical proportions.”
+
+```{r vars, echo=FALSE}
+question("You might use a chi-square goodness-of-fit test to examine which of the following relationships?",
+      answer("The number of people from various countries represented at a conference and the number of people from various countries expected to be represented at the conference", correct = TRUE),
+      answer("Number of people from two countries"),
+      answer("The relationships among age groups"),
+      answer("Height, weight, and season")
+)
+```
+
+### Why use it? 
+
+Goodness-of-fit tests are used to compare proportions of levels of a nominal variable to theoretical proportions.  Common goodness-of-fit tests are G-test, chi-square, and binomial or multinomial exact tests.
+ 
+In general, there are no assumptions about the distribution of data for these tests.  However, the results of chi-square tests and G-tests can be inaccurate if statistically expected cell counts are low.  A rule of thumb is that all statistically expected cell counts should be 5 or greater for chi-square and G-tests.  For a more complete discussion, see McDonald in the “Optional Readings” section for details on what constitutes low cell counts.
+ 
+One approach is to use exact tests, which are not bothered by low cell counts.  However, if there are not low cell counts, using G-test or chi-square test is fine.  The advantage of chi-square tests is that your audience may be more familiar with them.
+ 
+G-tests are also called likelihood ratio tests, and “Likelihood Ratio Chi-Square” by SAS.
+
+```{r a-1, echo=FALSE}
+question("When would you NOT use a chi-square goodness-of-fit test?",
+      answer("When you can't prove that your data is normally distributed"),
+      answer("When your data is very large"),
+      answer("When the count per category is less than 5", correct = TRUE),
+      answer("Now, because there is always a quiz")
+)
+```
+
+### How it Works
+
+Unlike the [exact test of goodness-of-fit](http://www.biostathandbook.com/exactgof.html), when you do a chi-square test you do not directly calculate the probability of obtaining the observed results or something more extreme. Instead, like almost all statistical tests, the chi-square test has an intermediate step: it uses the data to calculate a test statistic that measures how far the observed data is from the null _expectation_. You then use a mathematical relationship, in this case the chi-square distribution, to estimate the probability of obtaining that value of the test statistic.
+
+You calculate the test statistic by taking an observed number (O for "Observed"), subtracting the "expected" number (E), then squaring this difference. The larger the deviation from the null hypothesis, the larger the difference between observed and expected is. Squaring the differences makes them all positive, even if it does change the scale of the difference. You can always change it back later.
+
+```{r a-2, echo=FALSE}
+question("You square the difference between what and what when you calculate a chi-square test statistic?",
+         answer("The first category and the second category, then the first and the third categories, and so on"),
+         answer("What you hoped to have for dinner and what was actually on offer"),
+         answer("The value of a scalar variable for one group and for another group"),
+         answer("The observed and the expected numbers", correct = TRUE)
+)
+```
+
+
+The next step is to divide each difference by the expected number; then you add up these "standardized differences". 
+
+The test statistic is approximately equal to the log-likelihood ratio used in the G–test. It is conventionally called a "chi-square" statistic, although this is somewhat confusing because it's just one of many test statistics that follows the theoretical chi-square distribution. The equation is
+
+$\displaystyle \chi^{2} = ∑\frac{(O−E)^{2}}{E}$.
+
+As with most test statistics, the larger the difference between observed and expected, the larger the test statistic becomes. 
+
+To give an example, let's say your null hypothesis is a 3:1 ratio of smooth wings to wrinkled wings in offspring from a bunch of Drosophila crosses. You observe 770 flies with smooth wings and 230 flies with wrinkled wings; the expected values are 750 smooth-winged and 250 wrinkled-winged flies. Entering these numbers into the equation, the chi-square value is 2.13. If you had observed 760 smooth-winged flies and 240 wrinkled-wing flies, which is closer to the null hypothesis, your chi-square value would have been smaller, at 0.53; if you'd observed 800 smooth-winged and 200 wrinkled-wing flies, which is further from the null hypothesis, your chi-square value would have been 13.33.
+
+```{r b, echo=FALSE}
+question("Which leads to a rejected null hypothesis for a chi-square calculation?",
+         answer("A large difference between the observed and expected values", correct = TRUE),
+         answer("A small or no difference between the observed and expected values"),
+         answer("A large number of categories in the variable being examined"),
+         answer("A low value for p")
+)
+```
+
+The distribution of the test statistic under the null hypothesis is approximately the same as the theoretical chi-square distribution. This means that once you know the chi-square value and the number of degrees of freedom, you can calculate the probability of getting that value of chi-square using the chi-square distribution. The number of degrees of freedom is the number of categories minus one, so for our example there is one degree of freedom.
+
+The shape of the chi-square distribution depends on the number of degrees of freedom. For an extrinsic null hypothesis (the much more common situation, where you know the proportions predicted by the null hypothesis before collecting the data), the number of degrees of freedom is simply the number of values of the variable, minus one. Thus if you are testing a null hypothesis of a 1:1 flipped coin ratio, there are two possible values (heads and tails), and therefore one degree of freedom. This is because once you know how many of the total are heads (a number which is "free" to vary from 0 to the sample size), the number of tails is determined. If there are three values of the variable (such as red, pink, and white), there are two degrees of freedom, and so on.
+
+```{r c, echo=FALSE}
+question("For an extrinsic null hypothesis analysis, how many degrees of freedom are there when you expect 200 smooth-winged and 50 wrinkled-winged flies?",
+         answer("199 + 49 - 1 = 247 because for an extrinsic null, you want n - 1 as the degrees of freedom"),
+         answer("2 - 1 = 1 because for an extrinsic null, you want n - 1 (groups) as the degrees of freedom", correct = TRUE),
+         answer("199 + 49 - 2 groups = 246 because for an extrinsic null, you want n - 1 (per group) as the degrees of freedom"),
+         answer("You can't measure freedom")
+)
+```
+
+An intrinsic null hypothesis is one where you estimate one or more parameters _from the data_ in order to get the numbers for your null hypothesis. One example is [Hardy-Weinberg proportions](https://www.khanacademy.org/science/biology/her/heredity-and-genetics/v/hardy-weinberg), which has to do with, for instance, [allele frequency](https://www.khanacademy.org/science/biology/her/heredity-and-genetics/v/allele-frequency). For an intrinsic null hypothesis, the number of degrees of freedom is calculated by taking the number of values of the variable, subtracting 1 for each parameter estimated from the data, then subtracting 1 more. 
+
+Thus for Hardy-Weinberg proportions with two alleles and three genotypes, there are three values of the variable (the three genotypes); you subtract one for the parameter estimated from the data (the allele frequency, p); and then you subtract one more, yielding one degree of freedom. There are other statistical issues involved in testing fit to Hardy-Weinberg expectations, so if you need to do this, see Engels (2009) and the older references he cites.
+
+## Practice
+
+The following code chunk checks to see if you have the required packages and, if you don't, installs them to your R environment. You can copy and paste this code into your local copy of RStudio or run it from here to see what happens. 
+
+```{r packages, exercise=TRUE}
+if(!require(EMT)){install.packages("EMT")}
+if(!require(DescTools)){install.packages("DescTools")}
+if(!require(ggplot2)){install.packages("ggplot2")}
+if(!require(rcompanion)){install.packages("rcompanion")}
+```
+
+#### Drosophila Example
+
+Try the chi-square goodness-of-fit code using the function `chisq.test`. Let's use McDonald's Drosophila example. Since we need only counts and not data points, we can run the command without having first to load a data set. Here is the information you need:
+
+* We expect a proportion of 3:1 of smooth-winged to wrinkle-winged Drosophila
+* The sample has 770 smooth-winged flies 
+* The sample has 230 wrinkle-winged flies
+
+Please edit the following code to get a result:
+
+```{r chisq-test, exercise = TRUE}
+observed <- 1        # REPLACE WITH CORRECT VALUES
+expected <- 1        # REPLACE WITH CORRECT VALUES
+chisq.test(x = observed,
+           p = expected)
+```
+```{r chisq-test-solution}
+observed <- c(770, 230)        # observed frequencies
+expected <- c(0.75, 0.25)      # expected proportions
+chisq.test(x = observed,
+           p = expected)
+```
+
+### Extrinsic Hypothesis for Male Red Crossbills
+
+European crossbills (_Loxia curvirostra_) have the tip of the upper bill either right or left of the lower bill. Their crossed bills help them extract seeds from pine cones. Some researchers have hypothesized that frequency-dependent selection would keep the number of right and left-billed birds at a 1:1 ratio. Groth (1992) observed 1752 right-billed and 1895 left-billed crossbills.
+
+Calculate the expected frequency of right-billed birds by multiplying the total sample size (3647) by the expected proportion (0.5) to yield 1823.5. Do the same for left-billed birds. The number of degrees of freedom when an for an extrinsic hypothesis is the number of classes minus one. In this case, there are two classes (right and left), so there is one degree of freedom.
+
+```{r red-cross-bills, exercise = TRUE}
+
+```
+```{r red-cross-bills-solution}
+#'
+#' You can do this many ways. Here is one wordier example that arrives at the 
+#' correct output. Sometimes you might want to make your code more wordy
+#' if you have few concerns about memory or about computation time and if 
+#' it is very important that the code be readable.
+
+# Set up values
+obs_right <- 1752 #right-crossed
+obs_left <- 1895  #left crossed
+observed <- c(obs_right, obs_left)
+expected <- c(.5, .5)
+
+# Use the values to perform the test
+chisq.test(x = c(obs_right, obs_left),
+           p = c(.5, .5))
+```
+
+You can reject the null hypothesis that there is no difference between observed and expected: there is one. There are significantly more left-billed crossbills than right-billed.
+
+### Extrinsic Hypothesis for Rice Herbicides
+
+Shivrain et al. (2006) crossed clearfield rice, which are resistant to the herbicide imazethapyr, with red rice, which are susceptible to imazethapyr. They then crossed the hybrid offspring and examined the F2 generation, where they found 772 resistant plants, 1611 moderately resistant plants, and 737 susceptible plants. If resistance is controlled by a single gene with two co-dominant alleles, you would expect a 1:2:1 ratio. Compare the observed numbers with the 1:2:1 ratio using `chisq.test`.
+
+```{r rice, exercise = TRUE}
+
+```
+```{r rice-solution}
+observe <- c(772, 1611, 737)
+expected <- c(0.25, 0.50, 0.25)
+
+chisq.test(x = observed,
+           p = expected)
+```
+
+### Extrinsic Hypothesis for Bird Foraging Behavior
+
+Mannan and Meslow (1984) studied bird foraging behavior in a forest in Oregon. In a managed forest, 54% of the canopy volume was Douglas fir, 40% was ponderosa pine, 5% was grand fir, and 1% was western larch. They made 156 observations of foraging by red-breasted nuthatches; 70 observations (45% of the total) in Douglas fir, 79 (51%) in ponderosa pine, 3 (2%) in grand fir, and 4 (3%) in western larch. The biological null hypothesis is that the birds forage randomly, without regard to what species of tree they're in; the statistical null hypothesis is that the proportions of foraging events are equal to the proportions of canopy volume. Set this up and perform a `chisq.test`.
+
+```{r bird-foraging, exercise = TRUE}
+
+```
+```{r bird-foraging-solution}
+observed <- c(70, 79, 3, 4)
+expected <- c(0.54, 0.40, 0.05, 0.01)
+
+chisq.test(x = observed,
+           p = expected)
+```
+
+Notice that the code produced a warning. The expected numbers in this example are pretty small for some groups, so it would be better to analyze it with an exact test. It's here because it's a good example of an extrinsic hypothesis that comes from measuring something (canopy volume, in this case) rather than from a mathematical theory. Those sorts of examples can be hard to find. 
+
+### Intrinsic Hypothesis for Alleles
+
+McDonald (1989) examined variation at the Mpi locus in the amphipod crustacean Platorchestia platensis collected from a single location on Long Island, New York. There were two alleles, Mpi<sup>90</sup> and Mpi<sup>100</sup>, and the genotype frequencies in samples from multiple dates pooled together were 1203 Mpi<sup>90/90</sup>, 2919 Mpi<sup>90/100</sup>, and 1678 Mpi<sup>100/100</sup>. The estimate of the Mpi<sup>90</sup> allele proportion from the data is 5325/11600 = 0.459. 
+
+Using the Hardy-Weinberg formula and this estimated allele proportion, the expected genotype proportions are 0.211 Mpi<sup>90/90</sup>, 0.497 Mpi<sup>90/100</sup>, and 0.293 Mpi<sup>100/100</sup>. There are three categories (the three genotypes) and one parameter estimated from the data (the Mpi<sup>90</sup> allele proportion), so there is one degree of freedom. 
+
+You might be tempted to run this analysis as you did the others:
+
+>observed <- c(1203, 2919, 1678)    
+expected < c(.211, .497, .293)    
+chisq.test(observed, expected)    
+
+You would get these results:
+
+>    Pearson's Chi-squared test    
+data:  observed and expected_prop    
+X-squared = 6, df = 4, p-value = 0.1991,     
+
+which would be wrong. 
+
+```{r why_not_chisq, echo=FALSE}
+question("Why?",
+         answer("It's not wrong, it's right."),
+         answer("Because there is a typo in the expected proportions"),
+         answer("Because the degrees of freedom should number 3 to account for the fact that one calculation is already done before running `chisq.test`."),
+         answer("`chisq.test` assumes that the degrees of freedom in this case number 2 (*k* = 2 groups = 2 df). In fact they number 1 (*k* = 2 groups - 1 df for the calculation = 1 df), because a degree of freedom was eliminated by calculating the expected proportions based on the observed allele counts", correct = TRUE)
+)
+```
+
+We can't use `chisq.test` because of its faulty assumption about the degrees of freedom. Let's calculate a variable `chi2` manually by plugging the correct values into the formula noted above and repeated here for your convenience:
+
+$\displaystyle \chi^{2} = ∑\frac{(O−E)^{2}}{E}$,
+
+where O = observed and E = expected. 
+
+It looks complicated, but it isn't. It's a fairly simple series of statements in R. You will need 3 variables: `observed`, a concatenation of the 3 previously mentioned observed counts; `expected_prop`, a concatenation of the 3 previously mentioned expected proportions, and `expected_count`, the sum of the observations multiplied by `expected_prop`. 
+
+Have set up those three values, you can now calculate `chi2` to be the sum of the quantity `observed - expected_count` (which is what `∑(O - E)` means), square it, then that quantity divided by the expected count. To get you started, this is the sum of the differences between `observed` and `expected` squared:
+
+>sum((observed - expected_count)^2.
+
+Divide that by the expected count and you have your `chi2`. 
+
+Try it now, and if you get stuck, peek at the solution by clicking on the Solution button at the top of the code chunk.
+
+
+```{r prepare-alleles}
+observed <- c(1203,  2919,  1678)
+expected_prop <- c(0.211, 0.497, 0.293)
+expected_count <- sum(observed) * expected_prop
+
+chi2 <- sum((observed - expected_count)^2 / expected_count)
+```
+```{r alleles, exercise=TRUE}
+
+```
+```{r alleles-solution}
+observed <- c(1203,  2919,  1678)
+expected_prop <- c(0.211, 0.497, 0.293)
+expected_count <- sum(observed) * expected_prop
+
+chi2 <- sum((observed - expected_count)^2 / expected_count)
+```
+
+That supplies `chi2`, but it does not tell us what the odds are of having a distribution shaped like this (or one more extreme) by chance. Fortunately (and of course) someone has already written a function that does this and you can use it. Call `pchisq`, passing to it the value for `chi2` you calculated in the last code chunk, the degrees of freedom (remember that this is 1 and not 2), and `lower.tail` set equal to `FALSE`. We don't need to know, right now, what `lower.tail` is all about.
+
+```{r pchisq, exercise = TRUE, exercise.setup = "prepare-alleles"}
+
+```
+```{r pchisq-solution}
+P <- pchisq(chi2,
+       df = 1,
+       lower.tail = FALSE)   
+```
+
+The result is not significant. You cannot reject the null hypothesis that the data fit the expected Hardy-Weinberg proportions. 
+
+>Memorize this forever: *You haven't proven the null*. You can never prove a null by deciding you can't with confidence reject it. The bar is very low for proving you can't reject a null hypothesis. It must be much higher before you can with confidence utterly and forever reject the alternative hypothesis and claim the null hypothesis is true.
+
+## References
+
+John H. McDonald's [Handbook of Biological Statistics](http://www.biostathandbook.com/kruskalwallis.html)
+
+Salvatore S. Mangiafico's [An R Companion for the Handbook of Biostatistics](https://rcompanion.org/rcompanion/a_02.html)
