@@ -1,4 +1,5 @@
-# modules
+# Arcus Education Lessons and the Learning Plan Generator
+
 Previously, we had a repository consisting of multiple kinds of files to support our modular education.  We wanted 
 to change the structure to 2 or more repositories:  
 
