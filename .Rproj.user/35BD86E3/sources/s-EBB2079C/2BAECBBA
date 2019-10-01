@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1569959011829.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1347660424",
+    "id" : "2BAECBBA",
+    "lastKnownWriteTime" : 1569959019,
+    "last_content_update" : 1569959019935,
+    "path" : "~/Documents/GitHub/Arcus-Education-Lessons-and-Learning-Plan-Generator/Lessons/two-sample-t-test.Rmd",
+    "project_path" : "Lessons/two-sample-t-test.Rmd",
+    "properties" : {
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
