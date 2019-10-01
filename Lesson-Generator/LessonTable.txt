@@ -1,3 +1,5 @@
+This file is outdated.
+
 lesson_key,title,url
 101,Basic Building Blocks,http://www.shinyserver.tk:3838/Basic-Building-Blocks/
 102,Workspace and Files,http://www.shinyserver.tk:3838/Basic-Building-Blocks/
