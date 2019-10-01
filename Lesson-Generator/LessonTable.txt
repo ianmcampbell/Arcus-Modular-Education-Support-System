@@ -24,3 +24,4 @@ lesson_key,title,url
 123,General Linear Models,/general-linear-models/
 124,bioconductor,/bioconductor/
 125,bioconductor,/boconductor2/
+126,one-sample-t-test,/one-sample-t-test/
