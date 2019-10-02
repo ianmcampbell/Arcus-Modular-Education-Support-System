@@ -6,9 +6,9 @@ Many of CHOP’s principle investigators and their teams have become interested 
 
 In our workshops, 
 
-* each learner sets their own goals    
-* each learner receives an individualized curriculum based on their specific goals.   
-* success is measured by the extent to which each learner meets their own goals
+* Each learner sets their own goals.    
+* Each learner receives an individualized curriculum based on their goals.   
+* Success is measured by the extent to which each learner perceives themselves to have met their own goals.
 
 Workshop attendees have highly variable goals, from R basics to machine learning algorithms for genetic data to report writing for monthly metrics. We experimented with R packages to answer the question, “How can an instructor who has _N_ attendees at a workshop create _N_ different curricula based on _N_ different sets of learning goals, while still treating the class as _N_ individuals rather than as a single unit?” 
 
