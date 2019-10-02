@@ -22,7 +22,7 @@ All CHOP and Penn employees are welcome to attend one of our workshops. Registra
 
 ### Be MESSy: Become a Contributor!
 
-[New Lessons](https://github.research.chop.edu/braunsb/Arcus-Education-Lessons-and-Learning-Plan-Generator/tree/master/New-Lessons) is for you, our contributor. Please add your educational material to this folder. If you are a genetics expert, teach us about genetics; if you want people to know how to use a package you just created, create a lesson about it and add it. If you want to teach about Python, put your Python lessons there.
+[New Lessons](https://github.research.chop.edu/braunsb/Arcus-Education-Lessons-and-Learning-Plan-Generator/tree/master/New-Lessons) is a folder for you, our contributor. Please add your educational material to this folder. If you are a genetics expert, teach us about genetics; if you want people to know how to use a package you just created, create a lesson about it and add it. If you want to teach about Python, put your Python lessons there.
 
 These are our requirements for a lesson:
 
