@@ -1,6 +1,6 @@
 # Arcus Modular Education Support System (MESS)
 
-#### Designer, Sheila Braun, MA; Programmer, Ian Campbell, MD PhD. Based on ideas formed at the Summer 2019 Arcus Education retreat attended by Joy Payton, MS (Supervisor, Arcus Education) and Sheila Braun (Data Instructional Specialist II)
+#### Designer, Sheila Braun, MA; Programmer, Ian Campbell, MD PhD. Based on ideas formed at the Summer 2019 Arcus Education Retreat attended by Joy Payton, MS (Supervisor, Arcus Education) and Sheila Braun (Data Instructional Specialist II)
 
 Many of CHOP’s principle investigators and their teams have become interested in R and statistical analysis in R. In support of [the Arcus project at CHOP](https://arcus.reskubestage.research.chop.edu), on of our goals at [Arcus Education](https://education.arcus.chop.edu) is to create learning environments for relevant topics such as those in which 100% of attendees spend 100% of their time working towards their own goals at their own pace.
 
