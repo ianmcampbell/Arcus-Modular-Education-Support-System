@@ -1,4 +1,34 @@
-# Arcus Education Lessons and the Learning Plan Generator
+# Arcus Modular Education Support System (MESS)
+
+#### Designer Sheila Braun, MA; Programmer Ian Campbell, MD PhD. Based on ideas formed at the Arcus Education retreat of ??? attended by Joy Payton, MS (Supervisor, Arcus Education) and Sheila Braun (Data Instructional Specialist II)
+
+Many of CHOP’s principle investigators and their teams have become interested in R and statistical analysis in R. In support of [the Arcus project at CHOP](https://arcus.reskubestage.research.chop.edu), [Arcus Education](https://education.arcus.chop.edu)’s goal has been to create a learning environment for relevant topics (and there are many of those) in which 100% of attendees spend 100% of their time working towards their own goals at their own pace.
+
+In our workshops, 
+
+* each learner sets their own goals    
+* each learner receives an individualized curriculum based on their specific goals.   
+* success is measured by the extent to which each learner meets their own goals
+
+Workshop attendees have highly variable goals, from R basics to machine learning algorithms for genetic data to report writing for monthly metrics. We experimented with R packages to answer the question, “How can an instructor who has _N_ attendees at a workshop create _N_ different curricula based on _N_ different sets of learning goals, while still treating the class as _N_ individuals rather than as a single unit?” 
+
+To answer this question in a practical way, we are currently using R packages such as `shiny` and `learnr` to create a tool that streamlines the process of designing individual curricula.
+
+The software for this tool is in the [Personalized Learning Plan](https://github.research.chop.edu/braunsb/Arcus-Education-Lessons-and-Learning-Plan-Generator/tree/master/Personalized-Learning-Plan) folder. Individual lessons are in [Lessons](https://github.research.chop.edu/braunsb/Arcus-Education-Lessons-and-Learning-Plan-Generator/tree/master/Lessons). 
+
+### Be MESSy: Become a Contributor!
+
+[New Lessons](https://github.research.chop.edu/braunsb/Arcus-Education-Lessons-and-Learning-Plan-Generator/tree/master/New-Lessons) is for you, our contributor. Please add your educational material to this folder. If you are a genetics expert, teach us about genetics; if you want people to know how to use a package you just created, create a lesson about it and add it. If you want to teach about Python, put your Python lessons there.
+
+These are our requirements for a lesson:
+
+* It must be provided in Markdown (.Rmd is our favorite, but you can supply a .md file instead.
+* It must stand on its own. If you have Python code that runs upon rendering, or SQL, or videos, or links, they must work. 
+* It must adhere to CHOP's standards and ethics. 
+
+Our editors will check your lesson and add it to the list of options available to learners if we believe it is in line with our mission to educate learners at CHOP. 
+
+### Note about this Repo's History
 
 Previously, we had a repository consisting of multiple kinds of files to support our modular education.  We wanted 
 to change the structure to 2 or more repositories:  
