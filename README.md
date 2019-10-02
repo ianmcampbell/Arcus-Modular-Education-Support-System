@@ -28,6 +28,10 @@ These are our requirements for a lesson:
 
 Our editors will check your lesson and add it to the list of options available to learners if we believe it is in line with our mission to educate learners at CHOP. 
 
+### MESS Around: Come to a Workshop!
+
+All CHOP and Penn employees are welcome to attend one of our workshops. Registration is required. [Click here to find out more and to register](https://redcap.chop.edu/surveys/?s=EYWKYA48KT). 
+
 ### Note about this Repo's History
 
 Previously, we had a repository consisting of multiple kinds of files to support our modular education.  We wanted 
