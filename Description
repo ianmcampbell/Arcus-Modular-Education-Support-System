@@ -1,0 +1,36 @@
+# Arcus Modular Education Support System (MESS)
+
+## Designer Sheila Braun, MA; Programmer Ian Campbell, MD PhD. Based on ideas formed at an Arcus Education retreat attended by Joy Payton, MS (who heads up Arcus Education) and Sheila Braun (who teaches R and Statistics as part of Arcus Education)
+
+Many of CHOP’s principle investigators and their teams have become interested in R and statistical analysis in R. In support of the Arcus project at CHOP, Arcus Education’s goal has been to create a learning environment for these topics where 100% of attendees spend 100% of their time working towards their own goals at their own pace. In our workshops (a) each learner sets their own goals; (b) each learner receives an individualized curriculum based on their specific goals; (c) success is measured by the extent to which each learner meets their goals. Workshop attendees have highly variable goals, from R basics to machine learning algorithms for genetic data. We measured the effectiveness of this approach in comparison with a lecture-based curriculum; and we experimented with R packages to answer the question, “How can an instructor who has n attendees at a workshop create n different curricula based on n different sets of learning goals, while still treating the class as n individuals rather than as a single unit?” Our analysis indicates that a lower number of attendees feel dissatisfied with the experience relative to a lecture-based learning experience on the same subject. We used R packages such as shiny and learnr to create a tool that streamlines designing individual curricula. Our interactive poster will not only be a presentation of study data, it will also be a demonstration of our software tool so attendees may create their own curricula based on their own learning goals.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Note about this Repo's History
+
+Previously, we had a repository consisting of multiple kinds of files to support our modular education.  We wanted 
+to change the structure to 2 or more repositories:  
+
+1. One repository that will hold all and **only** lesson modules (previously the subfolders 
+"lessons", "personalized-learning-plan" and "lesson-generator").  We isolate these files so we can clone the entire repo 
+to the shiny education server using git (moves us away from subversion) to populate the module list that educators can use 
+to create curricula. THIS IS THAT REPO.
+
+3. One repository (or possibly more) that contain(s) the supporting code that actually starts the server and has 
+the code that will change seldom.

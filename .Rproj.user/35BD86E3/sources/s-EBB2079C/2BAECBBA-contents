@@ -8,6 +8,50 @@ runtime: shiny_prerendered
 options(digits = 3, scipen = 9999)
 if(!require(learnr)){install.packages("learnr")}
 library(learnr)
+Input =("
+Group Value
+2pm    69    
+2pm    70    
+2pm    66    
+2pm    63    
+2pm    68    
+2pm    70    
+2pm    69    
+2pm    67    
+2pm    62    
+2pm    63    
+2pm    76    
+2pm    59    
+2pm    62    
+2pm    62    
+2pm    75    
+2pm    62    
+2pm    72     
+2pm    63    
+5pm    68
+5pm    62
+5pm    67
+5pm    68
+5pm    69
+5pm    67
+5pm    61
+5pm    59
+5pm    62
+5pm    61
+5pm    69
+5pm    66
+5pm    62
+5pm    62
+5pm    61
+5pm    70
+")
+height = read.table(textConnection(Input),header=TRUE)
+names(height) <- c("section", "inches")
+tt_height <- t.test(inches ~ section, 
+                    data = height,
+                    var.equal = TRUE,
+                    conf.level = 0.95)
+
 ```
 
 ## Background
@@ -46,7 +90,7 @@ question("What other test does the two-sample _t_ test NOT resemble?",
 
 >* **H<sub>0</sub>**: The means of the measurement variable are equal in the two groups.     
 * **H<sub>A</sub>** (2-sided): The means of the measurement variable are not equal in the two groups.     
-* **H<sub>A</sub>** (1-sided): The mean of the measurement variable is higher (specifically---or lower specifically, but not either-or) than the number you decided on before doing the experiment.
+* **H<sub>A</sub>** (1-sided): The mean of the measurement variable is higher (specifically---or lower specifically, but not either-or because that would be a 2-sided test) in one of the groups.
 
 ```{r bb, echo=FALSE}
 question("What is NOT an example of a 1-sided null hypothesis?",
@@ -59,52 +103,128 @@ question("What is NOT an example of a 1-sided null hypothesis?",
 
 ### Examples of the Null and Alternative Hypotheses
 
-Imagine ... You get the following imaginary data, which is already loaded in `df` for your use:
+You have become curious about the sizes of adult children's feet. Are right feet the same as left feet?
 
-```{r cc}
-df
-```
+There are two variables in that question. 
 
->* **Example H<sub>0</sub>**: "people do not over- or underestimate their knee angles."     
-* **Example H<sub>A</sub>** (2-sided): "People over- or underestimate their knee angles."     
-* **Example H<sub>A</sub>** (1-sided, version 1): "People underestimate their knee angles."     
-* **Example H<sub>A</sub>** (1-sides, version 2): "People overestimate their knee angles."     
-
-If the null hypothesis were true that people do not over- or underestimate their knee angles, the mean of the 10 numbers in `df` would be the target angle, 120 ($\normalsize \mu$). 
-
-Calculate the mean of the numbers and store it in `mean_guess`. Print the result. 
-
-```{r ag, exercise = TRUE}
-
-```
-```{r ag-solution}
-(mean_guess <- mean(df$Angle))
-```
-
-Now see if the number is the same as the hypothetical null, $\normalsize \mu$ or 120.
-
-```{r b, exercise = TRUE}
-
-```
-```{r b-solution}
-muknee <- 120
-identical(muknee, mean_guess)
-```
-
-The mean of these ten numbers is not $\normalsize \mu$. 
-
-Question answered. We're done, right?
-
-No. 
-
-```{r c, echo=FALSE}
-question("Why not?",
-         answer("We don't have a big enough sample"),
-         answer("We don't know how likely it is that we got this result--or would get a more extreme result--by chance", correct = TRUE),
-         answer("We need to repeat the experiment many times over"),
-         answer("It's too much fun doing stats to be happy when anything is that simple")
+```{r two-vars, echo=FALSE}
+question("What are the two variables?",
+         answer("right feet and left feet"),
+         answer("foot size and type of person (adult vs. child)"),
+         answer("foot size and foot type (left vs. right)", correct = TRUE)
 )
 ```
+
+In fall 2004, students in the 2 p.m. section of John McDonald's Biological Data Analysis class had an average height of 66.6 inches, while the average height in the 5 p.m. section was 64.6 inches. Are the average heights of the two sections significantly different? 
+
+First, let's look at the data. It's been loaded in `height` for you. Use `head` to look at it, then change the variable names. There are lots of ways to change variable names in R. In this case, try simply stating `names(height) <- c("section", "inches")`. Then type `names(height)` to see if it worked. 
+
+```{r heightnames, exercise = TRUE}
+
+```
+```{r heightnames-solution}
+head(height)
+names(height) <- c("section", "inches")
+names(height)
+```
+
+The null hypothesis and alternatives are, therefore
+
+>* **Example H<sub>0</sub>**: "Mean heights in the two sections are the same."     
+* **Example H<sub>A</sub>** (2-sided): "Mean heights in the two sections are not the same."     
+* **Example H<sub>A</sub>** (1-sided, version 1): "Mean height in the 2 pm section is higher than in the 5 pm section."     
+* **Example H<sub>A</sub>** (1-sides, version 2): "Mean height in the 5 pm section is higher than in the 2 pm section."     
+
+We'll use aptly named function `t.test` to see if the means are NOT the same in the two sections. Pass it the formula `section ~ inches`, then `data = ` the data set name, then two parameters: `alternative` set to `two-sided` and `conf.level` set to the usual 0.95.
+
+
+```{r height-t-test, exercise = TRUE}
+
+```
+```{r height-t-test-solution}
+t.test(inches ~ section, # the nominal variable with two options
+       data = height,    # the measurement or scalar variable
+       alternative = "two.sided", 
+       conf.level = 0.95)
+```
+
+According to the output, _p_ is `r round(tt_height$p.value, 2)`. We would reject the null hypothesis if _p_ < .05 (as per usual), but in this case, it's not. We cannot reject the null hypothesis that mean heights in the two groups are the same. Note that we have not proven that the null hypothesis is true, just that we can't say it's _not_ true. 
+
+To report the results of a two-sample _t_ test, you would provide the test statistic (_t_), the [degrees of freedom]() (df), and the _p_ value (_p_) in a sentence like this: "based on the results of a _t_ test (_t_ = `r round(tt_height$statistic[[1]], 2)`, df = `r round(tt_height$parameter[[1]], 2)`, _p_ = `r round(tt_height$p.value[[1]], 2)), we do not reject the null hypothesis that the two group means are the same." 
+
+## More about the Output
+
+Run `t.test` again on the same data, but this time store the result in `tt_height`. 
+
+```{r tt_again, exercise = TRUE}
+
+```
+```{r tt_again-solution}
+tt_height <- t.test(inches ~ section, # the nominal variable with two options
+                    data = height,    # the measurement or scalar variable
+                    alternative = "two.sided", 
+                    conf.level = 0.95)
+```
+
+In R, everything is an object. What does this object look like?
+
+```{r tt_look_like, exercise = TRUE}
+
+```
+```{r tt_look_like-solution}
+tt_height
+```
+
+What is its structure? (Hint: use R's `str` function to find out.)
+
+```{r tt_str, exercise = TRUE}
+
+```
+```{r tt_str-solution}
+str(tt_height)
+```
+
+That's interesting. What looked like a paragraph of output was actually a list! Try accessing elements of the list, say, `method`.
+
+```{r tt_method, exercise = TRUE}
+
+```
+```{r tt_method-solution}
+tt_height$method
+```
+
+You can use output very nicely in your [reproducible Markdown text]() by calling it within text while you write. For instance, you might write, "I just did a " and then type a tic-mark (likely under the tilde in the upper left of your keyboard, looks like this: \`, not to be confused with a single quote), then `r tt_height$method`, followed by a closing tic-mark. The output would be 
+
+>I just did a `r tt_height$method`. 
+
+Let's go through the _t_ test outputted ("put out"?) list one by one.
+
+
+### Statistic
+
+Access `statistic` within `tt_height`.
+
+```{r access_statistic, exercise = TRUE}
+
+```
+```{r access_statistic-solution}
+tt_height$statistic
+```
+
+```{r statist_output, echo=FALSE}
+question("What is the statistic?",
+         answer("66.55556"),
+         answer("1.310886", correct = TRUE),
+         answer("31.17529"),
+         answer("0")
+)
+```
+
+
+
+
+
+
 
 ### Assumptions
 
