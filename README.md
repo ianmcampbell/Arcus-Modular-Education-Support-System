@@ -10,7 +10,7 @@ In our workshops,
 * Each learner receives an individualized curriculum based on their goals.   
 * Success is measured by the extent to which each learner perceives themselves to have met their own goals.
 
-Workshop attendees have highly variable goals, from R basics to machine learning algorithms for genetic data to report writing for monthly metrics. We experimented with R packages to answer the question, “How can an instructor who has _N_ attendees at a workshop create _N_ different curricula based on _N_ different sets of learning goals, while still treating the class as _N_ individuals rather than as a single unit?” 
+Workshop attendees have highly variable goals, from R basics to machine learning algorithms for genetic data to report writing for monthly metrics. We experimented with R packages to answer the question, “How can an instructor who has _N_ attendees at a workshop create _N_ different curricula based on _N_ different sets of learning goals, while still treating the class not as a single entity but as _N_ individuals?” 
 
 To answer this question in a practical way, we are currently using R packages such as `shiny` and `learnr` to create a tool that streamlines the process of designing individual curricula.
 
@@ -26,7 +26,7 @@ All CHOP and Penn employees are welcome to attend one of our workshops. Registra
 
 These are our requirements for a lesson:
 
-* It must be provided in Markdown (.Rmd is our favorite, but you can supply a .md file instead.
+* It must be provided in Markdown (.Rmd is our favorite, but you may supply a .md file instead).
 * It must stand on its own. If you have Python code that runs upon rendering, or SQL, or videos, or links, they must work. 
 * It must adhere to CHOP's standards and ethics. 
 
