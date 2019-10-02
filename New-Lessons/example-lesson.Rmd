@@ -1,0 +1,476 @@
+---
+title: "One-Sample _t_ Test"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+options(scipen = 9999)
+if(!require(learnr)){install.packages("learnr")}
+library(learnr)
+if(!require(psych)){install.packages("psych")}
+if(!require(rcompanion)){install.packages("rcompanion")}
+if(!require(lsr)){install.packages("lsr")}
+if(!require(ggplot2)){install.packages("ggplot2")}
+if(!require(tidyverse)){install.packages("tidyverse")}
+
+df <- as_tibble(cbind(c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J"), c(120.6, 116.4, 117.2, 118.1, 114.1, 116.9, 113.3, 121.1, 116.9, 117.0)))
+names(df) <- c("Individual", "Angle")
+df$Angle <- as.numeric(df$Angle)
+(mean_guess <- mean(df$Angle))
+
+Input = ("
+Instructor     Student     Sodium
+'Brendon Small'     a     1200
+'Brendon Small'     b     1400
+'Brendon Small'     c     1350
+'Brendon Small'     d     950
+'Brendon Small'     e     1400
+'Brendon Small'     f     1150
+'Brendon Small'     g     1300
+'Brendon Small'     h     1325
+'Brendon Small'     i     1425
+'Brendon Small'     j     1500
+'Brendon Small'     k     1250
+'Brendon Small'     l     1150
+'Brendon Small'     m     950
+'Brendon Small'     n     1150
+'Brendon Small'     o     1600
+'Brendon Small'     p     1300
+'Brendon Small'     q     1050
+'Brendon Small'     r     1300
+'Brendon Small'     s     1700
+'Brendon Small'     t     1300
+")
+
+sodium = as_tibble(read.table(textConnection(Input), header=TRUE))
+rm(Input)
+
+wpm_Input = ("
+Instructor     Student     words_per_minute
+'Dr. Katz Professional Therapist'     a     35
+'Dr. Katz Professional Therapist'     b     50
+'Dr. Katz Professional Therapist'     c     55
+'Dr. Katz Professional Therapist'     d     60
+'Dr. Katz Professional Therapist'     e     65
+'Dr. Katz Professional Therapist'     f     60
+'Dr. Katz Professional Therapist'     g     70
+'Dr. Katz Professional Therapist'     h     55
+'Dr. Katz Professional Therapist'     i     45
+'Dr. Katz Professional Therapist'     j     55
+'Dr. Katz Professional Therapist'     k     60
+'Dr. Katz Professional Therapist'     l     45
+'Dr. Katz Professional Therapist'     m     65
+'Dr. Katz Professional Therapist'     n     55
+'Dr. Katz Professional Therapist'     o     50
+'Dr. Katz Professional Therapist'     p     60
+")
+
+wpm = as_tibble(read.table(textConnection(wpm_Input),header=TRUE))
+rm(wpm_Input)
+muknee <- 120
+muNa <- 1500
+muwpm <- 40
+xNa <- sodium$Sodium
+xwpm <- wpm$words_per_minute
+```
+
+## Background
+
+There are several statistical tests that use the _t_ distribution and can be called _t_ tests. One is Student's _t_ test for one sample, named after "Student," the pseudonym William Gosset used to hide his employment by the Guinness brewery in the early 1900s (they had a rule that their employees weren't allowed to publish, and Guinness didn't want other employees to know that they were making an exception for Gosset). Student's _t_ test for one sample compares a sample to a theoretical mean. It has so few uses in biology that McDonald didn't cover it in previous editions of his Handbook, but then he found a use for it (McDonald and Dunn 2013), so here it is.
+
+```{r aa, echo=FALSE}
+question("What might have been one of Student's favorite pasttimes?",
+      answer("Drinking beer", correct = TRUE),
+      answer("Working as a hairdresser"),
+      answer("Flying to Jupiter's moons"),
+      answer("Going to school full time")
+)
+```
+
+### One-sample _t_ Test Variables
+
+>* One [scalar (a.k.a. "measurement") variable](http://www.biostathandbook.com/variabletypes.html#nominal)     
+* An expectation ($\normalsize \mu$ or "mu") of what the mean should be under the null hypothesis
+
+This method tests whether the mean of a scalar variable is different from the null expectation ($\normalsize \mu$).
+
+### Null and Alternative Hypotheses
+
+>* **H<sub>0</sub>**: The mean of the measurement variable is equal to the number that you decided on before doing the experiment.     
+* **H<sub>A</sub>** (2-sided): The mean of the measurement variable is not equal to the number you decided on before doing the experiment.     
+* **H<sub>A</sub>** (1-sided): The mean of the measurement variable is higher (specifically---or lower specifically, but not either-or) than the number you decided on before doing the experiment.
+
+```{r bb, echo=FALSE}
+question("What is NOT an example of a 1-sided null hypothesis?",
+         answer("It usually takes less than one hour to make pie dough"),
+         answer("The average monthly electric bill in Philadelphia, PA is $92", correct = TRUE),
+         answer("The average monthly electric bill in Philadelphia, PA is less than $100"),
+         answer("The average monthly electric bill in Philadelphia, PA is more than $100")
+)
+```
+
+### Examples of the Null and Alternative Hypotheses
+
+Imagine you're studying joint position sense, our ability to know what position our joints are in without looking or touching. You want to know whether people over- or underestimate their knee angles. You blindfold 10 volunteers, bend each of their knees to a 120° angle for a few seconds, and return it to a 90° angle. Then you ask each person to bend their knee to the 120° angle. The measurement variable is the angle of the knee, and the theoretical expectation from the null hypothesis is 120°, the target knee angle. You get the following imaginary data, which is already loaded in `df` for your use:
+
+```{r cc}
+df
+```
+
+>* **Example H<sub>0</sub>**: "people do not over- or underestimate their knee angles."     
+* **Example H<sub>A</sub>** (2-sided): "People over- or underestimate their knee angles."     
+* **Example H<sub>A</sub>** (1-sided, version 1): "People underestimate their knee angles."     
+* **Example H<sub>A</sub>** (1-sides, version 2): "People overestimate their knee angles."     
+
+If the null hypothesis were true that people do not over- or underestimate their knee angles, the mean of the 10 numbers in `df` would be the target angle, 120 ($\normalsize \mu$). 
+
+Calculate the mean of the numbers and store it in `mean_guess`. Print the result. 
+
+```{r a, exercise = TRUE}
+
+```
+```{r a-solution}
+(mean_guess <- mean(df$Angle))
+```
+
+Now see if the number is the same as the hypothetical null, $\normalsize \mu$ or 120.
+
+```{r b, exercise = TRUE}
+
+```
+```{r b-solution}
+muknee <- 120
+identical(muknee, mean_guess)
+```
+
+The mean of these ten numbers is not $\normalsize \mu$. 
+
+Question answered. We're done, right?
+
+No. 
+
+```{r c, echo=FALSE}
+question("Why not?",
+         answer("We don't have a big enough sample"),
+         answer("We don't know how likely it is that we got this result--or would get a more extreme result--by chance", correct = TRUE),
+         answer("We need to repeat the experiment many times over"),
+         answer("It's too much fun doing stats to be happy when anything is that simple")
+)
+```
+
+### Assumptions
+
+**Normal distribution**. Normality is a common assumption, and the _t_ test is no exception. It assumes that the observations within each group are normally distributed. If the distribution is symmetrical, such as a flat or bimodal distribution, you may still be able to proceed, though: the one-sample _t_ test is not all _that_ sensitive to non-normality; you will get accurate estimates of the P value, even with small sample sizes.
+
+Nevertheless, a severely skewed distribution can give you too many false positives unless the sample size is large (above 50 or so). If your data is severely skewed _and_ you have a small sample size, you should try a data transformation to make it less skewed. 
+
+With large sample sizes (> 50), the one-sample _t_ test will give accurate results even with severely skewed data.
+
+```{r d, echo=FALSE}
+question("Which situation will not result in reliable results of a one-sample _t_ test?",
+         answer("large sample size"),
+         answer("skewed data"),
+         answer("small sample size"),
+         answer("skewed data and a small sample size", correct = TRUE)
+)
+```
+
+### Interpretation
+
+To report significant results, say something like “Mean score for Variable A was significantly different from a default value of 75."
+
+## Practice: Sodium Levels
+
+In the following example, Brendon Small asked his students keep diaries of what they ate for a week, then calculate their daily sodium intake in milligrams.  As a first step in the analysis, he wanted to compare his students' mean sodium intake to the American Heart Association recommendation of 1500 mg (which is our new $\normalsize \mu$). 
+ 
+A one-sample _t_ test can be conducted with the `t.test` function in the native stats package.  Conveniently, the output includes the mean of the sample, a confidence interval for that mean, and a P value for the _t_ test.
+
+### Prepare Coding Environment
+
+The data is already available in a tibble (a type of data frame that prints nicely to the screen when you call it by name) called `sodium`. 
+
+Make sure you have installed the required packages. They are `psych`, `rcompanion`, `lsr`, `ggplot2`, and `tidyverse`.
+
+```{r e, exercise = TRUE}
+
+```
+```{r e-solution}
+if(!require(psych)){install.packages("psych")}
+if(!require(rcompanion)){install.packages("rcompanion")}
+if(!require(lsr)){install.packages("lsr")}
+if(!require(ggplot2)){install.packages("ggplot2")}
+if(!require(tidyverse)){install.packages("tidyverse")}
+```
+
+### Test Assumptions
+ 
+We will use a histogram with an imposed normal curve to confirm data are approximately normal. First, though, let's just look at the data. We'll use functions from the `psych` package, so be sure to call `library(psych)` before calling the functions `headTail`, `str`, and `summary`, passing `sodium` to each of them. (Tip: Sometimes if I know I'll be passing data to several functions, I'll set it equal to a shorter name, here `xNa`, so I can just type `xNa` instead of the longer name.)
+
+```{r f, exercise = TRUE}
+
+```
+```{r f-solution}
+xNa <- sodium$Sodium
+library(psych)
+headTail(xNa)
+str(xNa)
+summary(xNa)
+```
+
+Use the function `plotNormalHistogram` from the `rcompanion` package to see if the data is approximately normally distributed. All the function requires is the variable with the sodium levels, `Sodium`. Make sure to put `rcompanion` into the library before calling `plotNormalHistogram`.
+
+```{r g, exercise = TRUE}
+
+```
+```{r g-solution}
+library(rcompanion)
+plotNormalHistogram(xNa)
+```
+
+The shape isn't exactly normal, but it isn't badly skewed, either. Let's look at a normal quantile plot of the data. You don't have to store `sodium$Sodium` in the variable `xNa`, but I did. Then pass `xNa` to `qqnorm`. Evaluate the resulting plot. It needs a red line, so call `qqline` and pass it `xNa` and tell it to use `col` equal to "red".
+
+```{r h, exercise = TRUE}
+
+```
+```{r h-solution}
+qqnorm(xNa)
+qqline(xNa, col = "red")
+```
+
+A perfectly normal distribution would have the dots exactly along the line. This is not perfectly normal, but it's close enough.
+
+
+### Perform the _t_ Test
+
+We've tested the assumptions and found that they have been met. Now we run the code for the _t_ test itself. Call the function `t.test` and pass it the following: the variable `Sodium`, `mu` equal to the hypothesized level against which we want to test the students' sodium levels (1500), and `conf.int` with the desired confidence interval. People usually like to see 95% confidence intervals, so set `conf.int` equal to 0.95. Then run the chunk and let's see what happens.
+
+```{r i, exercise = TRUE}
+
+```
+```{r i-solution}
+muNa <- 1500 # theoretical mean
+t.test(xNa,
+       mu = muNa,
+       conf.int = 0.95)
+```
+
+A bunch of text and numbers. What does it all mean?
+
+### Interpret the Output
+
+`t.test` gives us lots of good information about our hypothesis test:
+
+* It tells you which variable you passed it (in this case, `sodium$Sodium`)    
+* It provides specific statistics: 
+     * _t_ is -4.9053, which is where within a _t_ distribution our data mean would appear. Locations within the _t_ distribution dictate P's value
+     * P is close to 0 (0.00009825)    
+* Then the function tells you in plain English what to do with the information it just provided. Here, it says to reject the null hypothesis in favor of the alternative hypothesis that the "true mean is not equal to 1500."     
+* Going one step further (because we asked it to), `t.test` provides the 95% confidence interval, the interval within which 95% of samples like this one's mean sodium would fall. That's between 1196.83 and 1378.17 with our data.     
+* Finally, it gives us the sample estimate of the true population mean ("population" meaning the underlying population represented by our sample of students): 1287.5 grams of sodium.    
+
+## More Practice: Words per Minute
+
+You will find a dataset called `wpm` in memory. Let's perform a _t_ test using the data.
+
+### Prepare the Coding Environment
+
+Our prepations for this example analysis are the same as for the previous example: we'll use the same packages. Use the same code as for the previous _t_ test to make sure all the necessary packages have been loaded.
+
+```{r j, exercise = TRUE}
+
+```
+```{r j-solution}
+if(!require(psych)){install.packages("psych")}
+if(!require(rcompanion)){install.packages("rcompanion")}
+if(!require(lsr)){install.packages("lsr")}
+if(!require(ggplot2)){install.packages("ggplot2")}
+if(!require(tidyverse)){install.packages("tidyverse")}
+```
+
+Now have a look at the data. We are especially interested in the sample size. Copy `wpm$words_per_minute` to `xwpm` for brevity.
+
+```{r k, exercise = TRUE}
+
+```
+```{r k-solution}
+xwpm <- wpm$words_per_minute
+library(psych)
+headTail(xwpm)
+str(xwpm)
+summary(xwpm)
+```
+
+There are 16 observations, so we ought not to perform a _t_ test on this data if it is badly skewed. 
+
+### Test Assumptions
+
+As is typical for this sort of data, we use a histogram with an imposed normal curve to confirm data are approximately normal. We'll use functions as before from the `rcompanion` package, so be sure to call `library(rcompanion)` before calling the function `plotNormalHistogram` using `xwpm`.
+
+```{r l, exercise = TRUE}
+
+```
+```{r l-solution}
+xwpm <- wpm$words_per_minute
+library(rcompanion)
+plotNormalHistogram(xwpm)
+```
+
+This distribution is normal enough for a _t_ test, even though it is a little skewed. 
+
+Let's look at a normal quantile plot of the data. Pass `wpm$words_per_minute` (or whatever you copied it to for brevity) to `qqnorm`. Evaluate the resulting plot. Let's have a green line this time. Call `qqline` and pass it `xwpm` and tell it to use `col` equal to "green".
+
+```{r m, exercise = TRUE}
+
+```
+```{r m-solution}
+qqnorm(xwpm)
+qqline(xwpm, col = "green")
+```
+
+### Perform the _t_ Test
+
+We've tested the assumptions and found that they have been met. Now we run the code for the _t_ test itself. We are interested in whether these students, in general, type faster than the typical 40 words per minute. Call the function `t.test` and pass it the following: the variable `xwpm`, `mu` equal to the hypothesized level against which we want to test the students' words per minute (set `muwpm <- 40`), and `conf.int` with the desired confidence interval. People usually like to see 95% confidence intervals, so set `conf.int` equal to 0.95. Then run the chunk and let's see what happens.
+
+```{r n, exercise = TRUE}
+
+```
+```{r n-solution}
+muwpm <- 40
+t.test(xwpm,
+       mu = muwpm,
+       conf.int = 0.95)
+```
+
+### Interpret the Output
+
+We performed the _t_ test by testing our students' average typing speed against the expected average of 40 words per minut.  _t_ is 6.925 with 15 degrees of freedom. The locations within the _t_ distribution dictate a P close to 0 (0.000004853) and a 95% confidence interval for `words_per_minute` ranging from 50.59948 to 60.02552. In plain English, we are advised that we can reject the null hypothesis that our students' typing speed is the same as the average 40 wpm and conclude that the true mean for the population represented by our sample of students is not equal to 40. In fact, we estimate the population mean to be 55.3125 words per minute. 
+
+## Effect Size: How much of a Difference do we Care About?
+
+Suppose you have a very large sample of students and find it statistically significant that they have a different typing speed from the average 40 words per minute. Suppose, too, that the mean for your sample is 41 words per minute. Is that an interesting difference? How much of a difference is interesting? What is a small, medium, or large effect size? 
+
+The first problem is that small, medium, and large effect sizes mean different things depending on what you measure. Six words per minute when the average is 40 is a 15% change, whereas 6 grams of sodium out of 1500 is only a .4% change. How do we standardize the importance of changes?
+
+### Cohen's _d_
+
+Cohen’s _d_ can be used as an effect size statistic for a one-sample _t_ test.  Calculate Cohen's _d_ by taking the difference between the mean of the data (like 55.3125 wpm or 1287.5 grams of sodium) and $\normalsize \mu$, the default value or population estimate of the mean (like 40 wpm or 1500 grams of sodium), all divided by the standard deviation of the data (which you can get by using `sd(xwpm)` or `sd(xNa)` :
+
+>$\large d = \frac{| \bar{x} - \mu |}{\sigma}$ 
+
+Using the sodium example:
+
+>$\large d = \frac{|1287.5 - 1500|}{193.7341} = 1.096864.$ 
+
+Using the words-per-minute example:
+
+>$\large d = \frac{|55.3125 - 40|}{8.844725} = 1.731258.$ 
+
+But you don't have to do all that math. You don't even have to memorize the formula. R, of course, has a function that calculates it called `cohensD`. Call `cohensD` now and pass it the variable `sodium$Sodium` and the theoretical mean, 1500. First be sure to put `lsr` in the library.
+
+```{r o, exercise = TRUE}
+
+```
+```{r o-solution}
+library(lsr)
+cohensD(sodium$Sodium, 1500)
+```
+
+Cohens _d_ for `sodium$Sodium` is 1.096864. What does that mean?
+
+### Interpreting Cohen's _d_
+
+Cohen's _d_ ranges from 0 to $\normalsize \infty$, with 0 indicating no effect: the mean equals $\normalsize \mu$.  Cohen’s d can be positive or negative depending on whether the mean is greater than or less than mu. Our sodium effect size is 1.096864 standard deviations from the mean.
+
+#### Relating Cohen's _d_ to the Difference between the Theoretical and Sample Means
+
+What's the standard deviation of `sodium$Sodium`?
+
+```{r p, exercise = TRUE}
+
+```
+```{r p-solution}
+sd(sodium$Sodium)
+```
+ 
+So the actual effect size we found in the _t_ test about sodium levels in students is `1.096864 * sd(sodium$Sodium)`. Calculate that and store it in the variable `sodium_effect`. Feel free to store `sodium$Sodium` in `xNa` so you can type it just once. Then print out the difference between the theoretical mean and the sample mean. 
+
+```{r q, exercise = TRUE}
+
+```
+```{r q-solution}
+xNa <- sodium$Sodium
+(sodium_effect <- 1.096864 * sd(xNa))
+1500 - mean(xNa)
+```
+
+By comparing the two values, we basically just checked our work and found it to be correct.
+
+#### Relating Cohen's _d_ to Effect Size in the World at Large
+
+But forget about the actual change in sodium. We used Cohen's _d_ to _standardize_ the effect size so we could compare the importance of the differences we found between sample words per minute (55.3125) and expected words per minute (40) and that between sample sodium intake (1287.5) grams and expected sodium intake (1500 grams). Which are the relative effect sizes?
+ 
+A Cohen’s d of 0.5 suggests that the mean and $\normalsize \mu$ differ by one-half the standard deviation of the data. A Cohen’s _d_ of 1.0 suggests that the mean and $\normalsize \mu$ differ by one standard deviation of the data.
+
+Rule of thumb about effect sizes: 
+
+* Small effect = 0.2    
+* Medium effect = 0.5    
+* Large effect = 0.8    
+
+To review, calculate the two Cohen's _d_'s for the two problems we worked above. Would you call them small, medium, or large effects?
+
+```{r r, exercise = TRUE}
+
+```
+```{r r-solution}
+cohensD(wpm$words_per_minute, muwpm)
+cohensD(sodium$Sodium, muNa)
+```
+
+Both the effects we found are large (> .8)
+
+## Graphing the Data against the Default (i.e. Expected) Value
+
+Here is a box plot with the default value highlighted. This next code chunk isn't an exercise. It's an example of code you can use to report your findings. 
+
+```{r s}
+library(ggplot2)
+
+ggplot(data=sodium, 
+       aes(x = Instructor, y = Sodium)) +
+       geom_boxplot() +
+       geom_point(aes(x = 1, y = 1500), 
+                  colour="blue",
+                  size = 8,
+                  shape = "+") +
+       theme_bw() +
+       theme(axis.title = element_text(face = "bold")) +
+       theme(axis.text = element_text(face = "bold"))
+
+```
+
+Now use that code to create another box plot, this one for the words-per-minute data. Go ahead and improve on the plot design by adding a label for the y axis that isn't the variable name but rather the variable _label_. If you don't know how to do this, you can click on the Solution button and peek or you can do an internet search for "adding labels to my ggplot". There are several ways to accomplish this. And try changing the theme to minimal to see if you prefer the output.
+
+```{r t, exercise = TRUE}
+
+```
+```{r t-solution}
+library(ggplot2)
+
+ggplot(data=wpm, 
+       aes(x = Instructor, y = words_per_minute)) +
+       geom_boxplot() +
+       geom_point(aes(x = 1, y = 40), 
+                  colour="blue",
+                  size = 8,
+                  shape = "+") +
+       theme_minimal() +
+       theme(axis.title = element_text(face = "bold")) +
+       theme(axis.text = element_text(face = "bold")) +
+  labs(y = "Words per Minute")
+```
+
+## References
+
+This lesson is heavily based with thanks on the works of John H. McDonald ([Handbook of Biological Statistics](http://www.biostathandbook.com/chigof.html)) and Salvatore S. Mangiafico ([R Companion to the Biostats Handbook](https://rcompanion.org/rcompanion/b_03.html)).
