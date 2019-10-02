@@ -18,7 +18,7 @@ The software for this tool is in the [Personalized Learning Plan](https://github
 
 ### MESS Around: Come to a Workshop!
 
-All CHOP and Penn employees are welcome to attend one of our workshops. Registration is required. [Click here to find out more and to register](https://redcap.chop.edu/surveys/?s=EYWKYA48KT). 
+All CHOP and Penn employees are welcome to attend our workshops. Registration is required. [Click here to find out more and to register](https://redcap.chop.edu/surveys/?s=EYWKYA48KT). 
 
 ### Be MESSy: Become a Contributor!
 
