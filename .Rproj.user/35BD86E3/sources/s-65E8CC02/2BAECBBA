@@ -5,13 +5,14 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "242241286",
+    "hash" : "338219947",
     "id" : "2BAECBBA",
-    "lastKnownWriteTime" : 1570028265,
-    "last_content_update" : 1570028265154,
-    "path" : "~/Documents/GitHub/Arcus-Education-Lessons-and-Learning-Plan-Generator/Lessons/two-sample-t-test.Rmd",
-    "project_path" : "Lessons/two-sample-t-test.Rmd",
+    "lastKnownWriteTime" : 1570050005,
+    "last_content_update" : 1570050005479,
+    "path" : "~/Documents/GitHub/Arcus-Modular-Education-Support-System/Lessons/common-terms.Rmd",
+    "project_path" : "Lessons/common-terms.Rmd",
     "properties" : {
+        "docOutlineVisible" : "0"
     },
     "read_only" : false,
     "read_only_alternatives" : [
