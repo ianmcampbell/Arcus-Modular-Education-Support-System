@@ -100,12 +100,17 @@ output$page_output <- renderUI({
           # Add custom message if present
           if(!is.null(query[["message"]])){urlsafebase64decode(query[["message"]])} else {""},
           tags$br(),
+
+          #Curricula and module links are created dynamically. This function expects a list of length N where N curricula ploted
+          #Each list element should be a 1x2 data.table. The first element should be the relative file path to the curriculum Rmd file.
+          #The second element should be a numeric vector with the IDs of the modules to link that match entries in ModuleTable.txt
+          #If no module links are required for a curriculum, a numeric vector of length 1 containing the integer 100 should be provided
           lapply(curricula_to_render,function(x){
                    curriculum_filename <- x[[1]]
                    curriculum_module_list <- x[[2]]
                    list(inclRmd(curriculum_filename),
                    #If curriculum needs links, insert section for browser based learning modules
-                    if(unlist(curriculum_module_list) != 100){
+                    if(unlist(curriculum_module_list)[1] != 100){
                     student_lessons <- module_table[match(unlist(curriculum_module_list),lesson_key), ]
                     list(tags$h3("Curriculum"),
                     "Here is a list of lessons we chose based on your stated goals. They can be completed in any modern browser. Your progress is saved and you can return at any time.",
