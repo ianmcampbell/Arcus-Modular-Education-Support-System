@@ -28,7 +28,7 @@ server <- function(input, output, session) {
         tags$h3("Learner Name:"),
         textInput("name", label = ""),
         tags$h3("Custom Message:"),
-        textAreaInput("message", label = "", width = "2000px",height = "1350px"),
+        textAreaInput("message", label = "", width = "400px",height = "200px"),
         tags$h3("Select Personae, Curricula and Modules:"),
         checkboxInput(inputId = "default_modules",label = "Use Default Modules in Curricula",value = TRUE),
         selectizeInput(inputId = "main_input", label="", choices = master_table$display, multiple = TRUE,width = "50%"),
