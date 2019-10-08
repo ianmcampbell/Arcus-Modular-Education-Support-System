@@ -10,8 +10,8 @@ source("URL-Encode.R")
 source("Rmd-Render.R")
 
 #Load the lesson and curricula table from disk
-module_table <- fread("ModuleTable.txt")
-curricula_table <- fread("CurriculaTable.txt")
+module_table <- fread("ModuleTable.csv")
+curricula_table <- fread("CurriculaTable.csv")
 
 #Convert default modules to a list of numeric vectors
 curricula_table[ , default_modules := sapply(curricula_table$default_modules,function(x){as.numeric(unlist(strsplit(x,",")))})]
