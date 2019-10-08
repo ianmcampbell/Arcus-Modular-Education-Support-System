@@ -92,7 +92,7 @@ server <- function(input, output, session) {
         if(nchar(encoded_module_list) > 1){module_url_element <- paste0("&modules=",encoded_module_list)} else {module_url_element <- ""}
         if(nchar(encoded_curricula_list) > 1){curricula_url_element <- paste0("&curricula=",encoded_curricula_list)} else {curricula_url_element <- ""}
         if(nchar(encoded_modulesplit) > 2){modulesplit_url_element <- paste0("&modulesplit=",encoded_modulesplit)} else {modulesplit_url_element <- ""}
-        URL <- paste0("http://a-mess.org/Personalized-Learning-Plan/?",
+        URL <- paste0("http://www.a-mess.org/Personalized-Learning-Plan/?",
                       name_url_element,
                       message_url_element,
                       module_url_element,
