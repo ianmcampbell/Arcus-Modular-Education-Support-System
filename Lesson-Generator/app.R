@@ -7,7 +7,7 @@ library(dplyr)
 source("URL-Encode.R")
 
 #Load tables from disk
-module_table <- fread("../Personalized-Learning-Plan/ModuleTable.txt")
+module_table <- fread("ModuleTable.csv")
 curricula_table <- fread("../Personalized-Learning-Plan/CurriculaTable.txt")
 master_table <- rbind(curricula_table[,list(type="Curriculum",key=curriculum_key,title,default_modules)],module_table[,list(type="Module",key=lesson_key,title,default_modules=NA)])
 master_table[,display:=paste0(type,": ",title)]
