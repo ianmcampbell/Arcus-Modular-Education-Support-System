@@ -1,7 +1,7 @@
 library(shiny)
 library(RCurl)
 library(data.table)
-library(dplyr)
+library(magrittr)
 
 #Source functions for URL encoding of lesson plans and user names
 source("URL-Encode.R")
@@ -35,27 +35,30 @@ output$page_output <- renderUI({
     else
     {title_string <- paste0(urlsafebase64decode(learner_name),"'s Personalized Learning Plan")}
 
-    #Load module list from URL; otherwise, leave NULL
+    #Decode module list from URL; otherwise, leave NULL
     module_url_list <- query[["modules"]]
     if(is.null(module_url_list)) {
       module_list <- NULL
       }
     else
-    {module_list <- decode_lessons(module_url_list)}
+    {module_list <- decode_lessons(module_url_list)
+    #Returns numeric vector of modules
+    }
 
-    #Load curriculua list from URL; otherwise, supply default
+    #Decode curriculua list from URL; otherwise, supply default
     curricula_url_list <- query[["curricula"]]
     if(is.null(curricula_url_list))
-       {curricula_list <- c(101,103)}
+       {curricula_list <- 101}
     else {
       curricula_list <- decode_lessons(curricula_url_list)
+      #Returns numeric vector of curricula
     }
 
     #Load module-splitting instructions from URL; otherwise leave null
     curricula_url_split <- query[["modulesplit"]]
     if(!is.null(curricula_url_split)) {
-      curricula_split <- urlsafebase64decode(curricula_url_split)
-      curricula_split <- as.numeric(unlist(strsplit(curricula_split,",")))
+      curricula_split <- curricula_url_split %>% urlsafebase64decode  %>% strsplit(.,",") %>% unlist %>% as.numeric
+      #Returns numeric vector of number of modules per curriculum
       }
     else {
       curricula_split <- NULL
@@ -107,8 +110,10 @@ output$page_output <- renderUI({
           #If no module links are required for a curriculum, a numeric vector of length 1 containing the integer 100 should be provided
           lapply(curricula_to_render,function(x){
                    curriculum_filename <- x[[1]]
+
                    curriculum_module_list <- x[[2]]
-                   list(inclRmd(curriculum_filename),
+                   list(
+                     if(!is.na(curriculum_filename)){inclRmd(curriculum_filename)} else {""},
                    #If curriculum needs links, insert section for browser based learning modules
                     if(unlist(curriculum_module_list)[1] != 100){
                     student_lessons <- module_table[match(unlist(curriculum_module_list),lesson_key), ]
