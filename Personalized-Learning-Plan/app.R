@@ -48,7 +48,7 @@ output$page_output <- renderUI({
     #Decode curriculua list from URL; otherwise, supply default
     curricula_url_list <- query[["curricula"]]
     if(is.null(curricula_url_list))
-       {curricula_list <- 101}
+       {curricula_list <- c(101,105)}
     else {
       curricula_list <- decode_lessons(curricula_url_list)
       #Returns numeric vector of curricula
