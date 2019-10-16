@@ -48,7 +48,7 @@ output$page_output <- renderUI({
     #Decode curriculua list from URL; otherwise, supply default
     curricula_url_list <- query[["curricula"]]
     if(is.null(curricula_url_list))
-       {curricula_list <- 101}
+       {curricula_list <- c(101,105)}
     else {
       curricula_list <- decode_lessons(curricula_url_list)
       #Returns numeric vector of curricula
@@ -128,11 +128,6 @@ output$page_output <- renderUI({
                     ""
                     }
                                                                )}),
-
-          tags$h2("Join the R User Group"),
-          "If you haven’t already, consider joining the CHOP R User Group, where you will find cookies (the edible ones), coffee, conversations, presentations, and help with your code. We have a newsletter to announce upcoming gatherings (usually held semimonthly) and an active slack user group.",
-          tags$a(href="https://bit.ly/chop-r)",tags$img(src = "chop-r.gif",width = "225px", height="150px", style="display: block; margin-left: auto; margin-right: auto;")),
-          tags$img(src = "footer.png"),
 
           # Style for div
           style = "font-size:15px")
