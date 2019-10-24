@@ -48,7 +48,7 @@ output$page_output <- renderUI({
     #Decode curriculua list from URL; otherwise, supply default
     curricula_url_list <- query[["curricula"]]
     if(is.null(curricula_url_list))
-       {curricula_list <- c(101,105)}
+       {curricula_list <- c(101)}
     else {
       curricula_list <- decode_lessons(curricula_url_list)
       #Returns numeric vector of curricula
@@ -108,9 +108,9 @@ output$page_output <- renderUI({
           #Each list element should be a 1x2 data.table. The first element should be the relative file path to the curriculum Rmd file.
           #The second element should be a numeric vector with the IDs of the modules to link that match entries in ModuleTable.txt
           #If no module links are required for a curriculum, a numeric vector of length 1 containing the integer 100 should be provided
+          browser(),
           lapply(curricula_to_render,function(x){
                    curriculum_filename <- x[[1]]
-
                    curriculum_module_list <- x[[2]]
                    list(
                      if(!is.na(curriculum_filename)){inclRmd(curriculum_filename)} else {""},
@@ -124,9 +124,7 @@ output$page_output <- renderUI({
                       #Generate URLs from the selected rows of the lessons table
                       apply(cbind(seq(1,nrow(student_lessons)),student_lessons[,list(title,url)]),1,function(x){list(tags$a(href=x[3], paste(c("Lesson ",x[1],": ",x[2]),collapse = ""), target = "newtab"),tags$br())})
                       , style = "font-size:20px; margin-left:5%"))}
-                  else {
-                    ""
-                    }
+                  else {""}
                                                                )}),
 
           # Style for div
