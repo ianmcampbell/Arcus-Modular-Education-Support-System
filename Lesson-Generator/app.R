@@ -1,3 +1,4 @@
+#Lesson Generator
 library(shiny)
 library(RCurl)
 library(htmlwidgets)
@@ -9,7 +10,10 @@ source("URL-Encode.R")
 
 #Load tables from disk
 module_table <- fread("ModuleTable.csv")
+# module_table <- fread("/Users/campbellim/Arcus/Lessons/ModuleTable.csv")
 curricula_table <- fread("CurriculaTable.csv")
+# curricula_table <- fread("/Users/campbellim/Arcus/Curricula/CurriculaTable.csv")
+
 master_table <- rbind(curricula_table[,list(type="Curriculum",key=curriculum_key,title,default_modules)],module_table[,list(type="Module",key=lesson_key,title,default_modules=NA)])
 master_table[,display:=paste0(type,": ",title)]
 setkey(master_table,display)
@@ -31,8 +35,11 @@ server <- function(input, output, session) {
         tags$h3("Custom Message:"),
         textAreaInput("message", label = "", width = "400px",height = "200px"),
         tags$h3("Select Personae, Curricula and Modules:"),
-        checkboxInput(inputId = "default_modules",label = "Use Default Modules in Curricula",value = TRUE),
-        selectizeInput(inputId = "main_input", label="", choices = master_table$display, multiple = TRUE,width = "50%"),
+        checkboxInput(inputId = "default_modules",label = "Use Default Modules in Curricula",value = FALSE),
+        fluidRow(
+          column(selectizeInput(inputId = "main_input", label="Curricula", choices = master_table[type=="Curriculum",display], multiple = TRUE),width=6),
+          column(selectizeInput(inputId = "module_input", label="Modules", choices = master_table[type=="Module",display], multiple = TRUE),width=6)
+          ),
         renderTable(master_table[values$selected_items,list(type,title,key)]),
         actionButton("clear", "Clear"),
         actionButton("gen", "Generate URL"),
@@ -67,6 +74,20 @@ server <- function(input, output, session) {
                                           paste0(.,collapse = ",")
 
         updateSelectizeInput(session, "main_input", selected = "")
+    })
+
+    observeEvent(input$module_input,{
+      values$selected_type <<- master_table[input$module_input,type]
+
+      values$selected_items <<- append(values$selected_items,input$module_input)
+
+      #Calculate the modules per curriculum
+      values$modules_per_curriculum <<- master_table[values$selected_items,type] %>%
+        split(., cumsum(.=="Curriculum")) %>%
+        sapply(.,function(x){sum(x=="Module")}) %>%
+        paste0(.,collapse = ",")
+
+      updateSelectizeInput(session, "module_input", selected = "")
     })
 
     observeEvent( input$clear,{
