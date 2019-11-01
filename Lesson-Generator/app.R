@@ -5,6 +5,7 @@ library(htmlwidgets)
 library(data.table)
 library(dplyr)
 library(shinyjqui)
+library(DT)
 #Source functions for URL encoding and decoding
 source("URL-Encode.R")
 
