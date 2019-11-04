@@ -84,7 +84,7 @@ server <- function(input, output, session) {
                                        strsplit(.,split=",") %>%
                                        unlist %>%
                                        as.numeric
-            values$current_modules <- c(input$main_input,master_table[type == "Module" & key %in% current_default_modules,display])
+            values$current_modules <- c(input$main_input,master_table[type == "Module"][match(current_default_modules,key),display])
             values$selected_items <<- append(values$selected_items,values$current_modules)
         }
         #Otherwise, just add the selection directly
