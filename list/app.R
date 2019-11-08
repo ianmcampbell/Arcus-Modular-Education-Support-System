@@ -17,11 +17,19 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
     output$page_output <- renderUI({
-        apply(module_table[,list(title,lesson_key,url)],1,function(x){
-        list(tags$a(href=paste("../",x[3],collapse=""), paste(c("Lesson: ",x[1]," Key: ",x[2]),collapse = ""), target = "newtab"),
-             tags$br() )
-        })
-    })
+            list(tags$h2("List of Available Lessons"),
+            tags$table(style = "padding: 50%; width: 80%;",
+            tags$tr(tags$th("Key"),tags$th("Name"),tags$th("Path")),
+                apply(module_table[,list(title,lesson_key,url)],1,function(x){
+                    tags$tr(
+                        tags$td(x[2]),
+                        tags$td(x[1]),
+                        tags$td(tags$a(href=paste("..",x[3],collapse="",sep=""), x[3], target = "newtab"))
+
+                    )
+                }),
+                )
+    )})
 
 }
 
