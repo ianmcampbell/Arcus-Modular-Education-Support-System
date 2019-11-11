@@ -25,7 +25,7 @@ server <- function(input, output) {
                         tags$td(x[2]),
                         tags$td(x[4]),
                         tags$td(x[1]),
-                        tags$td(tags$a(href=paste("..",x[3],collapse="",sep=""), x[3], target = "newtab"))
+                        tags$td(tags$a(href=paste("http://www.a-mess.org",x[3],collapse="",sep=""), x[3], target = "newtab"))
 
                     )
                 }),
