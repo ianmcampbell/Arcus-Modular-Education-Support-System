@@ -14,8 +14,8 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-    module_table <- fread("/srv/shiny-server/ModuleTable/ModuleTable.csv")
     system("git -C /srv/shiny-server/ModuleTable pull")
+    module_table <- fread("/srv/shiny-server/ModuleTable/ModuleTable.csv")
     #module_table <- fread("~/Arcus/ModuleTable/ModuleTable.csv")
     #system("git -C ~/Arcus/ModuleTable pull")
     values <- reactiveValues(table=module_table,review=FALSE,pass=FALSE,error="",write=FALSE)
@@ -57,11 +57,11 @@ server <- function(input, output) {
         #write.csv(x = values$table, file = "~/Arcus/ModuleTable/ModuleTable.csv",row.names = FALSE,quote=c(2:4))
         write.csv(x = values$table, file = "/srv/shiny-server/ModuleTable/ModuleTable.csv",row.names = FALSE,quote=c(2:4))
         #system("git -C ~/Arcus/ModuleTable/ add ModuleTable.csv")
-        system("git -C /srv/shiny-server/Arcus/ModuleTable/ add ModuleTable.csv")
+        system("git -C /srv/shiny-server/ModuleTable/ add ModuleTable.csv")
         #system('git -C ~/Arcus/ModuleTable/ commit -m "Commit from web app."')
-        system('git -C /srv/shiny-server/Arcus/ModuleTable/ commit -m "Commit from web app."')
+        system('git -C /srv/shiny-server/ModuleTable/ commit -m "Commit from web app."')
         #system("git -C ~/Arcus/ModuleTable/ push")
-        system("git -C /srv/shiny-server/Arcus/ModuleTable/ push")
+        system("git -C /srv/shiny-server/ModuleTable/ push")
         values$review <<- FALSE
         values$write <<- TRUE
     })
