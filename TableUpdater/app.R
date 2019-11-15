@@ -43,7 +43,7 @@ server <- function(input, output) {
         if(!(NewValues$lesson_key > 100 & NewValues$lesson_key < 1000 & values$pass)){values$pass <- FALSE; values$error <<- "Lesson Key must be an integer between 100 and 1000."}
         if(NewValues$lesson_key %in% module_table$lesson_key){values$pass <- FALSE; values$error <<- "Lesson Key cannot already be present in the table. See www.a-mess.org/list/"}
         if(nchar(input$url) < 3 | nchar(input$group) < 2 | nchar(input$title) < 3){values$pass <- FALSE; values$error <<- "Please fill in all fields."}
-        if(nchar(input$group) > nchar(gsub("[[:punct:]]| |[0-9]","",input$group))){values$pass <- FALSE; values$error <<- "Group must contain only characters."}
+        if(nchar(input$group) > nchar(gsub("[[:punct:]]|[0-9]","",input$group))){values$pass <- FALSE; values$error <<- "Group must contain only characters and spaces."}
         if(nchar(input$title) > nchar(gsub("[[:punct:]]","",input$title))){values$pass <- FALSE; values$error <<- "Title must contain only characters, numbers and spaces."}
         if(nchar(input$url) > nchar(gsub("([/-])|[[:punct:]]| ","\\1",input$url))){values$pass <- FALSE; values$error <<- "Path must contain only characters, numbers and dashes."}
         if(nchar(input$url) - nchar(gsub("^/|/$","",input$url)) != 2){values$pass <- FALSE; values$error <<- "Path must begin and end in forward slash."}
