@@ -18,7 +18,7 @@ server <- function(input, output) {
     module_table <- fread("/srv/shiny-server/ModuleTable/ModuleTable.csv")
     #module_table <- fread("~/Arcus/ModuleTable/ModuleTable.csv")
     #system("git -C ~/Arcus/ModuleTable pull")
-    values <- reactiveValues(table=module_table,review=FALSE,pass=FALSE,error="",write=FALSE)
+    values <- reactiveValues(table=module_table,review=FALSE,pass=FALSE,error="",write=FALSE,pull=FALSE)
 
     output$page_output <- renderUI({
             list(tags$h2("Record to Add"),
@@ -30,7 +30,11 @@ server <- function(input, output) {
                 actionButton("review", "Review"),tags$br(),tags$br(),
                 if(values$review){list(renderTable(values$table),actionButton("commit", "Commit"))} else {""},
                 if(values$error != ""){paste0("Error: ",values$error)} else {""},
-                if(values$write){"Table updated."} else {""})
+                if(values$write){"Table updated."} else {""},tags$br(),tags$br(),tags$br(),tags$br(),
+                actionButton("pull", "Pull Lesson Updates from GitHub"),tags$br(),
+                if(values$pull){"Lesson updates pulled from GitHub"} else {""},
+                tags$br(),
+            )
     })
 
     observeEvent(input$review,{
@@ -66,6 +70,11 @@ server <- function(input, output) {
         values$write <<- TRUE
     })
 
+
+    observeEvent(input$pull,{
+        system("git -C /srv/shiny-server/Lessons/ pull")
+        values$pull <<- TRUE
+    })
 }
 
 # Run the application
