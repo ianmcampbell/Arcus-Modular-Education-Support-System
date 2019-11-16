@@ -33,7 +33,7 @@ server <- function(input, output) {
                 if(values$write){"Table updated."} else {""},tags$br(),tags$br(),tags$br(),tags$br(),
                 actionButton("pull", "Pull Lesson Updates from GitHub"),tags$br(),
                 if(values$pull){"Lesson updates pulled from GitHub"} else {""},
-                tags$br(),
+                tags$br()
             )
     })
 
