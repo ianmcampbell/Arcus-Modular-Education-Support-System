@@ -1,0 +1,110 @@
+---
+title: "Update Module Table with a New Lesson"
+params:
+  key:
+    input: text
+    label: What numerical key do you want to assign to this lesson?
+    value: 500
+  title:
+    input: text
+    label: What's the title of the lesson as you want the user to see it?
+    value: swirl ggplot2 Part 2
+  group:
+    input: select
+    label: In which area of study does this lesson fit?
+    choices: [R Basics, tidyverse, Stats, Data Visualization, HPC, Genomics, Intermediate R, Advanced R, Python Basics, Intermediate Python, pandas, Advanced Python, Git & GitHub, Other]
+    value: Data Visualization
+  folder:
+    input: text
+    label: What is the directory name?
+    value: swirl-ggplot2-part-2
+  location:
+    input: text
+    label: In what directory do you have ModuleTable.csv?
+    value: a-MESS Lessons
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+This is interactive code to update `ModuleTable.csv`.
+
+### Get the old ModuleTable File
+
+I'm assuming here that you have put a copy of the Lessons repo in a local directory and that, after running this program, you will commit and push your changes to the repo. The next code chunk reads in the old module table.
+
+Note that I'm using the `readr` package. It brings in a tibble and offers information about variable types. Also, it is very fast.
+
+```{r input}
+library(readr)
+df <- read_csv(paste0(params$location, "/ModuleTable.csv"))
+```
+
+### Establish your New Lesson's Key
+
+You will be asked to offer a suggestion for your new lesson's key number, and if that key is not in use, your suggestion is accepted. Otherwise, you will be asked to offer another suggestion. This process is recursive: this code asks you for suggestions until you suggest an unassociated lesson key.
+
+```{r find-empty-key}
+#' Function recursive_get_key finds out whether the key the user
+#' suggested is already in use. If not, returns FALSE. 
+#' If if is already in use, ask the user to suggest another.
+
+recursive_get_key <- function(key_suggestion = params$key) {
+      prompt = "Another lesson is associated with that key. Please suggest another: " 
+      
+      if (sum(grepl(params$key, df$lesson_key)) == 0)  {
+            return(params$key) #key is not in use, so send it back
+      } else {
+            params$key <- readline(prompt = prompt) #Key is in use, so ask for another key
+            recursive_get_key(params$key)     #Call this function again
+      }
+}
+
+new_key <- recursive_get_key(params$key)
+```
+
+### Select a Group
+
+Lessons are organized into groups. If you can't find a group for your lesson from the dropdown list that appeared when you launched this program, you should select "Other." Doing so triggers the program to ask you to enter a new group name.
+
+I haven't yet figured out how to update my group list automatically so each new entry automatically appears the next time you launch this program. If you can, you should add your new group to the yaml above, where there are groups listed between square brackets. Then save this program and redistribute it to the team.
+
+
+```{r group}
+
+# Check if we need to create a new group
+
+if (params$group == "Other") {
+      prompt = "What new group would you like to use?"
+      group <- readline(prompt = prompt)
+} else {
+      group <- params$group
+}
+```
+
+### Add the new Row to the Module Table
+
+Simple enough:    
+
+1. Create the new row    
+2. Bind the new row to the rest of the module table    
+3. Look at the new module table    
+
+```{r create-new-row}
+
+newrow <- c(new_key,  # The empty number you found above.
+            group,    # either from the dropdown list or from your new suggestion
+            params$title, # Lesson title
+            paste0("/", params$folder, "/")) # lesson's folder name in the Lessons repo.
+df <- rbind(df, newrow) 
+df
+```
+
+### Save the New Module Table
+
+I like using the `readr` package for reading and writing. 
+
+```{r add-new-row-to-ModuleTable}
+write_csv(df, "a-MESS Lessons/ModuleTable.csv")
+```
+
