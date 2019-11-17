@@ -14,6 +14,7 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+    system("git -C /srv/shiny-server/ModuleTable reset --hard")
     system("git -C /srv/shiny-server/ModuleTable pull")
     module_table <- fread("/srv/shiny-server/ModuleTable/ModuleTable.csv")
     #module_table <- fread("~/Arcus/ModuleTable/ModuleTable.csv")
