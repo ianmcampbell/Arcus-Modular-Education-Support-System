@@ -63,7 +63,7 @@ server <- function(input, output) {
         #system("git -C ~/Arcus/ModuleTable/ add ModuleTable.csv")
         system("git -C /srv/shiny-server/ModuleTable/ add ModuleTable.csv")
         #system('git -C ~/Arcus/ModuleTable/ commit -m "Commit from web app."')
-        system('git -C /srv/shiny-server/ModuleTable/ commit -m "Commit from web app."')
+        system('git -C /srv/shiny-server/ModuleTable/ -c user.name="a-mess-bot" -c user.email="a-mess-bot@a-mess.org" commit -m "Commit from web app."')
         #system("git -C ~/Arcus/ModuleTable/ push")
         system("git -C /srv/shiny-server/ModuleTable/ push")
         values$review <<- FALSE
