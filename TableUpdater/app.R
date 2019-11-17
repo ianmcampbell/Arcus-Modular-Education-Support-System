@@ -73,6 +73,7 @@ server <- function(input, output) {
 
     observeEvent(input$pull,{
         system("git -C /srv/shiny-server/Lessons/ pull")
+        system("ln -s /srv/shiny-server/Lessons/* /srv/shiny-server")
         values$pull <<- TRUE
     })
 }
