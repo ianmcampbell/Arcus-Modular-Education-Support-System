@@ -1,4 +1,4 @@
-# Arcus Modular Education Support System (MESS)
+# Arcus Learning Exchange (ALEx)
 
 #### Designer, Sheila Braun, MA; Programmer, Ian Campbell, MD PhD. Based on ideas formed at the Summer 2019 Arcus Education Retreat attended by Joy Payton, MS (Supervisor, Arcus Education) and Sheila Braun (Data Instructional Specialist II, Arcus Education)
 
