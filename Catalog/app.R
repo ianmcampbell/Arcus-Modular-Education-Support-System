@@ -10,7 +10,7 @@ module_table <- fread("../ModuleTable/ModuleTable.csv")
 createLink <- function(val) {
     sprintf(paste0('<a href="..', URLdecode(val),'" target="_blank">', substr(val, 1, 40) ,'</a>'))
 }
-module_table[,url := createLink(url)]
+module_table[,url := sapply(url,createLink)]
 module_table[,lesson_key := NULL]
 LessonGroups <- module_table[,unique(group)]
 setnames(module_table,c("Group","Title","Link"))
