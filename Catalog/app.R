@@ -7,13 +7,15 @@ library(DT)
 
 #module_table <- fread("ModuleTable.csv")
 module_table <- fread("../ModuleTable/ModuleTable.csv")
-createLink <- function(val) {
-    sprintf(paste0('<a href="..', URLdecode(val),'" target="_blank">', substr(val, 1, 40) ,'</a>'))
+createLink <- function(url,text) {
+    sprintf(paste0('<a href="..', URLdecode(url),'" target="_blank">', substr(text, 1, 40) ,'</a>'))
 }
-module_table[,url := sapply(url,createLink)]
+module_table[,Link := apply(module_table,1,function(x){createLink(url = x["url"], text = x["title"])})]
 module_table[,lesson_key := NULL]
 LessonGroups <- module_table[,unique(group)]
-setnames(module_table,c("Group","Title","Link"))
+setnames(module_table,"group","Group")
+setnames(module_table,"title","Title")
+module_table <- module_table[,list(Group,Link)]
 values <- reactiveValues()
 values$RenderTable <- module_table
 # Define UI for application that draws a histogram
@@ -29,20 +31,18 @@ ui <- fluidPage(
 server <- function(input, output) {
 
     output$page_output <- renderUI({
-        fluidRow(column("",width=1),column(
+          list(fluidRow(titlePanel("ALEx Lesson Catalog")),
+          fluidRow(column(tags$h3("Filter by Group:"),checkboxGroupInput(inputId = "group", label = NULL, choices = LessonGroups, selected = FALSE, inline = FALSE, width="100%"),width=3),column(
             #Place the title
-            titlePanel("ALEx Lesson Catalog"),
-            tags$h3("Filter by Group:"),
-            checkboxGroupInput(inputId = "group", label = NULL, choices = LessonGroups, selected = FALSE, inline = TRUE, width="100%"),
-            renderText(input$group),
             DT::renderDataTable({
                 if(is.null(input$group)){RenderTable <- module_table}
                 else {RenderTable <- module_table[Group %in% input$group,]}
-                DT::datatable(RenderTable,options = list(pageLength = 25),escape = FALSE)
+                DT::datatable(RenderTable,options = list(pageLength = 25),escape = FALSE, rownames= FALSE)
                 })
-            ,width=10),column("",width=1))})
-
+            ,width=9)))})
 }
+
+
 
 
 
