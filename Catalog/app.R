@@ -15,7 +15,7 @@ module_table[,lesson_key := NULL]
 LessonGroups <- module_table[,unique(group)]
 setnames(module_table,"group","Group")
 setnames(module_table,"title","Title")
-module_table <- module_table[,list(Group,Link)]
+module_table <- module_table[,list(Link, Group)]
 values <- reactiveValues()
 values$RenderTable <- module_table
 # Define UI for application that draws a histogram
