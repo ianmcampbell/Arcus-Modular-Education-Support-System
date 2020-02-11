@@ -31,8 +31,9 @@ ui <- fluidPage(
 server <- function(input, output) {
 
     output$page_output <- renderUI({
-          list(fluidRow(titlePanel("ALEx Lesson Catalog")),
-          fluidRow(column(tags$h3("Filter by Group:"),checkboxGroupInput(inputId = "group", label = NULL, choices = LessonGroups, selected = FALSE, inline = FALSE, width="100%"),width=3),column(
+          list(
+              fluidRow(column(titlePanel("ALEx Lesson Catalog"),width=12, style='padding-left:40px;')),
+          fluidRow(column(tags$h4("Filter by Group:"),checkboxGroupInput(inputId = "group", label = NULL, choices = LessonGroups, selected = FALSE, inline = FALSE, width="100%"),width=3, style='padding-left:40px'),column(
             #Place the title
             DT::renderDataTable({
                 if(is.null(input$group)){RenderTable <- module_table}
