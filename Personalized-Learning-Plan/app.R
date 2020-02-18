@@ -1,3 +1,4 @@
+#Personalized Lesson Plan
 library(shiny)
 library(RCurl)
 library(data.table)
@@ -120,7 +121,7 @@ output$page_output <- renderUI({
                     if(unlist(curriculum_module_list)[1] != 100){
                     student_lessons <- module_table[match(unlist(curriculum_module_list),lesson_key), ]
                     list(tags$h3("Curriculum"),
-                    "Here is a list of lessons we chose based on your stated goals. They can be completed in any modern browser. Your progress is saved and you can return at any time.",
+                    "Here is a list of lessons for you to complete. They can be completed in any modern browser. Your progress is saved and you can return at any time.",
                      tags$br(),
                     tags$div(
                       #Generate URLs from the selected rows of the lessons table
