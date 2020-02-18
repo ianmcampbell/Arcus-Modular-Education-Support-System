@@ -31,15 +31,15 @@ server <- function(input, output, session) {
 
         fluidRow(column("",width=2),column(
         titlePanel("Custom Learning Plan Generation"),
-        tags$h3("Learner Name:"),
+        tags$h3("Learner Name: (Optional)"),
         textInput("name", label = ""),
-        tags$h3("Custom Message:"),
+        tags$h3("Custom Message: (Optional)"),
         textAreaInput("message", label = "", width = "400px",height = "200px"),
-        tags$h3("Select Personae, Curricula and Modules:"),
-        checkboxInput(inputId = "default_modules",label = "Use Default Modules in Curricula",value = FALSE),
+        tags$h3("Select Curricula and/or Lessons:"),
+        checkboxInput(inputId = "default_modules",label = "Use Default Lessons in Curricula",value = FALSE),
         fluidRow(
           column(selectizeInput(inputId = "main_input", label="Curricula", choices = master_table[type=="Curriculum",display], multiple = TRUE),width=6),
-          column(selectizeInput(inputId = "module_input", label="Modules", choices = master_table[type=="Module",display], multiple = TRUE),width=6)
+          column(selectizeInput(inputId = "module_input", label="Lesson", choices = master_table[type=="Module",display], multiple = TRUE),width=6)
           ),
         #renderTable(master_table[values$selected_items,list(type,title,key)]),
         dataTableOutput("Main_table"),
