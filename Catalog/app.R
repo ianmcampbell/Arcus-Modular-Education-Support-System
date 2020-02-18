@@ -8,7 +8,7 @@ library(DT)
 #module_table <- fread("ModuleTable.csv")
 module_table <- fread("../ModuleTable/ModuleTable.csv")
 createLink <- function(url,text) {
-    sprintf(paste0('<a href="..', URLdecode(url),'" target="_blank">', substr(text, 1, 40) ,'</a>'))
+    sprintf(paste0('<a href="..', URLdecode(url),'" target="_blank">', substr(text, 1, 75) ,'</a>'))
 }
 module_table[,Link := apply(module_table,1,function(x){createLink(url = x["url"], text = x["title"])})]
 module_table[,lesson_key := NULL]
